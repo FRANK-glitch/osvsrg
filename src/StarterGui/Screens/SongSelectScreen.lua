@@ -18,6 +18,7 @@ local Search = require(Utils.Search)
 local Logger = require(Utils.Logger):register(script)
 local Color = require(Utils.Color)
 local Keybind = require(Utils.Keybind)
+local Sorts = require(Utils.Sorts)
 
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local Frameworks = PlayerGui.Frameworks
@@ -135,7 +136,7 @@ local function getNPSGraph(props)
 		local n = c:GetNpsGraph()
 		local r = Settings.Options.Rate or 1
 		graph.xfloor = 0
-		graph.xceiling = #n
+		graph.xceiling = math.floor(c:GetLength()/1000)/r
 		graph.xinterval = 30
 		graph.yceiling = (Math.findMax(n)+5)*r
 		graph.yfloor = 0
@@ -220,6 +221,8 @@ local function SongButtons(props)
 end
 
 local function Leaderboard()
+	table.sort(lb, Sorts.Leaderboard)
+
 	local lb_gui = {}
 	for i, slot in pairs(lb) do
 		if i > maxSlots then break end

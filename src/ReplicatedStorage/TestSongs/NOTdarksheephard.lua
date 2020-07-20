@@ -4,7 +4,6 @@ rtv.AudioFilename = "NOT Dark Sheep"
 rtv.AudioDescription = ""
 rtv.AudioCoverImageAssetId = "--FILL IN COVERART ASSETID HERE--"
 rtv.AudioArtist = "NOT Chroma"
-rtv.AudioId = 15462315
 rtv.AudioMapper = "NOT Feylos"
 rtv.AudioDifficulty = 47
 rtv.AudioTimeOffset = -75
@@ -4023,7 +4022,7 @@ nt(236718,1)--4001
 nt(236774,4)--4002
 nt(236831,2)--4003
 nt(236887,3)--4004
-nt(236944,1)--4005
+nt(236944,4)--4005
 --
 rtv.TimingPoints = {
 	[1] = { Time = 3780; BeatLength = 338.983050847458; };
@@ -4037,4 +4036,15 @@ rtv.TimingPoints = {
 	[9] = { Time = 147509; BeatLength = 338.983050847458; };
 	[10] = { Time = 167848; BeatLength = 338.983050847458; };
 };
+
+rtv.AudioId = (function()
+	local id = 0
+	local lastTime = 0
+	for i, obj in pairs(rtv.HitObjects) do
+		lastTime = obj.Time - lastTime
+		id = id + lastTime + obj.Track + obj.Type + (obj.Duration or 0)
+	end
+	return id
+end)()
+
 return rtv

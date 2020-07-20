@@ -7,6 +7,8 @@ CLIENT SIDE LOGIC FOR ROBEATS CS
 --]]
 
 repeat wait() until game.Players.LocalPlayer.Character ~= nil
+game.Players.LocalPlayer.Character:Destroy()
+game.Players.LocalPlayer.Character = nil
 local LocalPlayer = game.Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local Utils = script.Parent:WaitForChild("Utils")

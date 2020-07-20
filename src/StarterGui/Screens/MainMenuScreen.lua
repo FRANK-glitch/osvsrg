@@ -245,7 +245,7 @@ function self:DoOptions(props)
 					ZIndex = 6,
 					BorderSizePixel = 0,
 					BackgroundTransparency = 1,
-					Text = "Music Player (wip)",
+					Text = "RoBeats CS",
 					Font = Enum.Font.GothamBlack,
 					TextScaled = true,
 					TextWrapped = true,
@@ -391,7 +391,7 @@ function self:DoOptions(props)
 				TextColor3 = Color3.fromRGB(255, 255, 255)
 			})
 		}),
-		SoonButton = Roact.createElement("ImageLabel", {
+		MultiButton = Roact.createElement("ImageButton", {
 			Size = UDim2.new(0.25, 0, 0.08, 0),
 			Position = UDim2.new(0.025, 0, 0.88, 0),
 			ZIndex = 2,
@@ -401,7 +401,11 @@ function self:DoOptions(props)
 			Image = "rbxassetid://2790382281",
 			SliceCenter = Rect.new(4, 4, 252, 252),
 			SliceScale = 1,
-			ImageColor3 = Color3.fromRGB(27, 27, 27)
+			ImageColor3 = Color3.fromRGB(27, 27, 27),
+			[Roact.Event.MouseButton1Click] = function()
+				self:Unmount()
+				Screens:FindScreen("MultiScreen"):ShowList()
+			end
 		}, {
 			Label = Roact.createElement("TextLabel", {
 				AnchorPoint = Vector2.new(0.5, 0.5),
@@ -410,7 +414,7 @@ function self:DoOptions(props)
 				ZIndex = 3,
 				BorderSizePixel = 0,
 				BackgroundTransparency = 1,
-				Text = "COMING SOON",
+				Text = "MULTIPLAYER",
 				Font = Enum.Font.GothamBlack,
 				TextScaled = true,
 				TextWrapped = true,
