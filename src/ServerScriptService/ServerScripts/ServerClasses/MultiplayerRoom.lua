@@ -1,3 +1,4 @@
+local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Boundary = require(ReplicatedStorage.Frameworks.Boundary)
@@ -8,6 +9,7 @@ local MultiplayerRoom = {}
 function MultiplayerRoom:new()
     local room = {}
 
+    room.id = HttpService:GenerateGUID(false)
     room.song = nil
     room.players = {}
     room.host = {}
@@ -27,7 +29,7 @@ function MultiplayerRoom:new()
     end
 
     function room:AddPlayer(plr)
-        room[#room+1] = plr
+        add(room.players, plr)
     end
 
     function room:RemovePlayer(plr)

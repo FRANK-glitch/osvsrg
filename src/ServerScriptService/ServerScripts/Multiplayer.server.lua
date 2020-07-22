@@ -9,6 +9,8 @@ local MultiRoom = require(ServerClasses.MultiplayerRoom)
 local Boundary = require(ReplicatedStorage.Frameworks.Boundary)
 local BoundaryServer = Boundary.Server
 
+local TableQuery = require(ReplicatedStorage.Frameworks.TableQuery)
+
 local Games = {}
 
 local function add(tab, item)
@@ -32,13 +34,28 @@ BoundaryServer:Register("CreateNewRoom", function(player)
     room.host = player
     room:AddPlayer(player)
     add(Games, room)
-    print(HttpService:JSONEncode(room))
 end)
 
-BoundaryServer:Register("JoinRoom", function(player)
-    
+BoundaryServer:Register("JoinRoom", function(player, gameid)
+    local query = TableQuery.query(Games)
+    query:select("id", gameid)
+    local roomsFound = query:find()
+    if #roomsFound > 0 then
+        local room = roomsFound[1]
+        room:AddPlayer(player)
+    end
 end)
 
-BoundaryServer:Register("LeaveRoom", function(player)
+BoundaryServer:Register("LeaveRoom", function(player, gameid)
+    local query = TableQuery.query(Games)
+    query:select("id", gameid)
+    local roomsFound = query:find()
+    if #roomsFound > 0 then
+        local room = roomsFound[1]
+        room:RemovePlayer(player)
+    end
+end)
+
+BoundaryServer:Register("DestroyRoom", function(player, roomid)
 
 end)
