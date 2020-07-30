@@ -17,6 +17,7 @@ local Utils = script.Parent
 local Settings = require(Utils.Settings)
 local Online = require(Utils.Online)
 local Logger = require(Utils.Logger):register(script)
+local Anticheat = require(Utils.Anticheat)
 local CurrentCamera = workspace.CurrentCamera
 
 local Utils = script.Parent
@@ -186,6 +187,14 @@ function Game:new()
 				timeSince = rawTime
 				UpdateScreen()
 			end
+		end
+
+		local hits = _local_services.hit_cache.hits
+		local testCase = Anticheat:NewCase(song, hits)
+		local cheated = testCase:RunPipeline()
+		if cheated then
+			Logger:Log("Cheating detected!")
+			game.Players.LocalPlayer:Kick("Cheating detected!")
 		end
 		Logger:Log("Game complete! Unmounting...")
 		Unmount()
