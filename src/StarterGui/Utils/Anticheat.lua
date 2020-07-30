@@ -69,9 +69,10 @@ function Anticheat:NewCase(song, hits)
         return true
     end)
 
-    newStage("ClientModification", function(i)
-        
+    newStage("ClientModification", function(i) -- WORK ON THIS LATER
+        return true
     end)
+    
 
     function TestCase:RunPipeline()
         for i, stage in pairs(TestCase.Stages) do
