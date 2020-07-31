@@ -21,10 +21,12 @@ local Graph = require(Frameworks.Graph)
 
 local UserInputService = game:GetService("UserInputService")
 
-local self = {}
+local OptionsScreen = Roact.Component:extend("OptionsScreen")
 
 local handle = {}
 local tree = {}
+
+local self_ = {}
 
 local curSelected = ""
 
@@ -121,7 +123,7 @@ local function NumberOption(name, bound, increment, clamp)
 
 	increment = increment or 1
 	local boundFire = "Update"..bound
-	self[bound], self[boundFire] = Roact.createBinding(Settings.Options[bound])
+	self_[bound], self_[boundFire] = Roact.createBinding(Settings.Options[bound])
 	optionNumber = optionNumber + 1
 	return Roact.createElement("Frame", {
 		Size = UDim2.new(0.975,0,0.075,0);
@@ -158,7 +160,7 @@ local function NumberOption(name, bound, increment, clamp)
 				Position = UDim2.new(0.5, 0, 0.5, 0),
 				BorderSizePixel = 0,
 				BackgroundTransparency = 1,
-				Text = self[bound],
+				Text = self_[bound],
 				Font = Enum.Font.GothamBlack,
 				TextScaled = true,
 				TextWrapped = true,
@@ -190,7 +192,7 @@ local function NumberOption(name, bound, increment, clamp)
 				TextColor3 = Color3.fromRGB(255, 255, 255),
 				[Roact.Event.MouseButton1Click] = function(rbx)
 					local optionValue = Settings:Increment(bound, increment, clamp or {})
-					self[boundFire](optionValue)
+					self_[boundFire](optionValue)
 				end
 			})
 		});
@@ -219,7 +221,7 @@ local function NumberOption(name, bound, increment, clamp)
 				TextColor3 = Color3.fromRGB(255, 255, 255),
 				[Roact.Event.MouseButton1Click] = function(rbx)
 					local optionValue = Settings:Increment(bound, -increment, clamp or {})
-					self[boundFire](optionValue)
+					self_[boundFire](optionValue)
 				end
 			})
 		});
@@ -229,7 +231,7 @@ end
 local function KeybindOption(name, bound, numOfKeys)
 	numOfKeys = numOfKeys or 1
 	local boundFire = "Update"..bound
-	self[bound], self[boundFire] = Roact.createBinding(Settings.Options[bound])
+	self_[bound], self_[boundFire] = Roact.createBinding(Settings.Options[bound])
 	optionNumber = optionNumber + 1
 	return Roact.createElement("Frame", {
 		Size = UDim2.new(0.975,0,0.075,0);
@@ -266,7 +268,7 @@ local function KeybindOption(name, bound, numOfKeys)
 				Position = UDim2.new(0.5, 0, 0.5, 0),
 				BorderSizePixel = 0,
 				BackgroundTransparency = 1,
-				Text = self[bound]:map(function(val)
+				Text = self_[bound]:map(function(val)
 					return formatKeys(val)
 				end),
 				Font = Enum.Font.GothamBlack,
@@ -280,11 +282,11 @@ local function KeybindOption(name, bound, numOfKeys)
 						[3] = -1;
 						[4] = -1;
 					})
-					self[boundFire](Settings.Options[bound])
+					self_[boundFire](Settings.Options[bound])
 					for i = 1, numOfKeys do
 						local u = UserInputService.InputBegan:Wait()
 						Settings.Options[bound][i] = u.KeyCode
-						self[boundFire](Settings.Options[bound])
+						self_[boundFire](Settings.Options[bound])
 					end
 				end
 			})
@@ -294,7 +296,7 @@ end
 
 local function BoolOption(name, bound)
 	local boundFire = "Update"..bound
-	self[bound], self[boundFire] = Roact.createBinding(Settings.Options[bound])
+	self_[bound], self_[boundFire] = Roact.createBinding(Settings.Options[bound])
 	optionNumber = optionNumber + 1
 	return Roact.createElement("Frame", {
 		Size = UDim2.new(0.975,0,0.075,0);
@@ -323,7 +325,7 @@ local function BoolOption(name, bound)
 			Image = "rbxassetid://2790382281",
 			SliceCenter = Rect.new(4, 4, 252, 252),
 			SliceScale = 1,
-			ImageColor3 = self[bound]:map(function(val)
+			ImageColor3 = self_[bound]:map(function(val)
 				return val and Color3.fromRGB(14, 238, 51) or Color3.fromRGB(253, 60, 34)
 			end),
 		},{
@@ -333,7 +335,7 @@ local function BoolOption(name, bound)
 				Position = UDim2.new(0.5, 0, 0.5, 0),
 				BorderSizePixel = 0,
 				BackgroundTransparency = 1,
-				Text = self[bound]:map(function(val)
+				Text = self_[bound]:map(function(val)
 					return val and "ON" or "OFF"
 				end),
 				Font = Enum.Font.GothamBlack,
@@ -342,7 +344,7 @@ local function BoolOption(name, bound)
 				TextColor3 = Color3.fromRGB(179, 179, 179),
 				[Roact.Event.MouseButton1Click] = function(rbx)
 					local newVal = Settings:ChangeOption(bound, not Settings.Options[bound])
-					self[boundFire](newVal)
+					self_[boundFire](newVal)
 				end
 			})
 		});
@@ -351,12 +353,12 @@ end
 
 local function ColorOption(name, bound)
 	local boundFire = "Update"..bound
-	self[bound], self[boundFire] = Roact.createBinding(Settings.Options[bound])
-	self.sliderRef = Roact.createRef()
-	self.sliderRef1 = Roact.createRef()
-	self.mouseDown = false
-	self.mouseDown1 = false
-	self.hueB, self.hueC = Roact.createBinding(Settings.Options[bound])
+	self_[bound], self_[boundFire] = Roact.createBinding(Settings.Options[bound])
+	self_.sliderRef = Roact.createRef()
+	self_.sliderRef1 = Roact.createRef()
+	self_.mouseDown = false
+	self_.mouseDown1 = false
+	self_.hueB, self_.hueC = Roact.createBinding(Settings.Options[bound])
 	optionNumber = optionNumber + 1
 
 	local o = Settings.Options[bound]
@@ -394,11 +396,11 @@ local function ColorOption(name, bound)
 			AnchorPoint = Vector2.new(0,0.5);
 			Position = UDim2.new(0.3,0,0.5,0);
 			BorderSizePixel = 0;
-			[Roact.Ref] = self.sliderRef;
+			[Roact.Ref] = self_.sliderRef;
 			[Roact.Event.MouseMoved] = function(rbx, x, y)
-				local slider = self.sliderRef:getValue()
+				local slider = self_.sliderRef:getValue()
 				local sx = x-slider.AbsolutePosition.X
-				if self.mouseDown then
+				if self_.mouseDown then
 					local cursor = slider.Cursor
 					if cursor then
 						local hue = sx/slider.AbsoluteSize.X
@@ -407,7 +409,7 @@ local function ColorOption(name, bound)
 							Hue = 1-hue
 						})
 						Settings:ChangeOption(bound, newColor)
-						self.hueC(Settings.Options[bound])
+						self_.hueC(Settings.Options[bound])
 						cursor.Position = UDim2.new(hue,0,0,0)
 					end
 				end
@@ -425,10 +427,10 @@ local function ColorOption(name, bound)
 				ImageTransparency = 1;
 				BackgroundTransparency = 0;
 				[Roact.Event.MouseButton1Down] = function(rbx)
-					self.mouseDown = true
+					self_.mouseDown = true
 				end;
 				[Roact.Event.MouseButton1Up] = function(rbx)
-					self.mouseDown = false
+					self_.mouseDown = false
 				end;
 			})
 		});
@@ -437,12 +439,12 @@ local function ColorOption(name, bound)
 			AnchorPoint = Vector2.new(0,0.5);
 			Position = UDim2.new(0.72,0,0.5,0);
 			BorderSizePixel = 0;
-			[Roact.Ref] = self.sliderRef1;
+			[Roact.Ref] = self_.sliderRef1;
 			[Roact.Event.MouseMoved] = function(rbx, x, y)
-				local slider = self.sliderRef1:getValue()
+				local slider = self_.sliderRef1:getValue()
 				local sx = x-slider.AbsolutePosition.X
 				local threshold = 0.5
-				if self.mouseDown1 then
+				if self_.mouseDown1 then
 					local cursor = slider.Cursor
 					if cursor then
 						local value = sx/slider.AbsoluteSize.X
@@ -467,7 +469,7 @@ local function ColorOption(name, bound)
 			end
 		}, {
 			UIGradient = Roact.createElement("UIGradient", {
-				Color = self.hueB:map(function(clr)
+				Color = self_.hueB:map(function(clr)
 					local tab = {}
 					for i, v in pairs(clr) do
 						tab[i] = v
@@ -488,10 +490,10 @@ local function ColorOption(name, bound)
 				ImageTransparency = 1;
 				BackgroundTransparency = 0;
 				[Roact.Event.MouseButton1Down] = function(rbx)
-					self.mouseDown1 = true
+					self_.mouseDown1 = true
 				end;
 				[Roact.Event.MouseButton1Up] = function(rbx)
-					self.mouseDown1 = false
+					self_.mouseDown1 = false
 				end;
 			})
 		})
@@ -519,7 +521,7 @@ local function NewSection(name, children, default)
 			[Roact.Event.MouseButton1Click] = function(rbx)
 				optionNumber = 0
 				curSelected = name
-				self:Update()
+				self_:Update()
 			end
 		}, {
 			Text = Roact.createElement("TextLabel", {
@@ -571,7 +573,13 @@ end
 	Logger:Log(string.format("New note color: H: %0.2f S: %0.2f V: %0.2f ", newColor.Hue, newColor.Saturation, newColor.Value))
 end)]]--
 
-local function Base()
+function OptionsScreen:init()
+	self:setState({
+		name = "OptionsScreen"
+	})
+end
+
+function OptionsScreen:render()
 	optionNumber = 0
 	local sections = Sections()
 	local tabs = {}
@@ -588,6 +596,7 @@ local function Base()
 
 	return Roact.createElement("ScreenGui", {
 		ResetOnSpawn = false,
+		Enabled = self.props.curScreen == self.state.name
 	}, {
 		OptionsFrame = Roact.createElement("ImageLabel", {
 			AnchorPoint =  Vector2.new(0.5,0.5);
@@ -653,8 +662,7 @@ local function Base()
 				ImageColor3 = Color3.fromRGB(232, 49, 49),
 				AnchorPoint =  Vector2.new(0,1),
 				[Roact.Event.MouseButton1Click] = function()
-					self:Unmount()
-					Screens:FindScreen("MainMenuScreen"):DoOptions()
+					self.props.switchScreens("MainMenuScreen")
 				end;
 			}, {
 				BackButton = Roact.createElement("TextLabel", {
@@ -673,19 +681,4 @@ local function Base()
 	});
 end
 
-function self:DoOptions()
-	tree = Base()
-	handle = Roact.mount(tree, PlayerGui, "Options")
-end
-
-function self:Update()
-	print("self:Update() was called with no arguments.")
-	tree = Base()
-	Roact.update(handle,tree)
-end
-
-function self:Unmount()
-	Roact.unmount(handle)
-end
-
-return self
+return OptionsScreen
