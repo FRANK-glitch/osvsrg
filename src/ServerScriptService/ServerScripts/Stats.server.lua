@@ -52,7 +52,7 @@ Boundary.Server:Register("GetMapLB", function(player, m_ID)
 	}).DecodedBody
 end)
 
-Boundary.Server:Register("GetUserPlays", function(player, data)
+Boundary.Server:Register("GetUserPlays", function(player)
 	return Api:Request("/users/"..player.UserId, "GET", nil, {
 		["Content-Type"] = "application/json";
 	}).DecodedBody
