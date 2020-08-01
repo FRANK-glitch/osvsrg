@@ -20,13 +20,48 @@ local Color = require(Utils.Color)
 local Keybind = require(Utils.Keybind)
 local Sorts = require(Utils.Sorts)
 
+local Components = script.Parent.Parent.Components
+local SongButton = require(Components.SongButton)
+
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
 local Frameworks = PlayerGui.Frameworks
 local Graph = require(Frameworks.Graph)
 
 local songs = SongLibrary:GetAllSongs()
 
-local self = {}
+local SongSelectScreen = Roact.Component:extend("SongSelectScreen")
+
+local self_ = {
+	State = Rodux.Store.new(function(state, action)
+		state = state or {
+			curSelected = songs[1];
+			rate = 1;
+		}
+
+		if action.type == "changeSong" then
+			state.curSelected = action.song
+		end
+
+		return;
+	end);
+	SongButtons = (function()
+		local bttns = {}
+
+		for i, v in pairs(songs) do
+			bttns[i] = Roact.createElement(SongButton, {
+				song = v;
+				songNum = i;
+				changeSong = function()
+					self_.State:dispatch({type = "changeSong", song = v})
+					print(self_.State:getState().curSelected:ConcatMetadata())
+				end
+			})
+		end
+
+		return bttns
+	end)()
+}
 	
 local maxSlots = 50
 
@@ -35,13 +70,10 @@ local rateMult = 1
 local search = nil
 local lb = {}
 local lb_gui = {}
-self.curSelected = songs[1]
+self_.curSelected = nil
 local mapname = ""
 local diffname = ""
 local artistname = ""
-
-local tree = {}
-local handle = {}
 
 local function getNumSlots()
 	local num = #lb
@@ -61,7 +93,6 @@ local screenBinds = {
 			max = 5;
 		})
 		changeRateBinding(newValue)
-		self:Redraw()
 	end);
 	Keybind:listen(Enum.KeyCode.Minus, function()
 		local newValue = Settings:Increment("Rate", -Settings.Options.SongSelectRateIncrement, {
@@ -69,7 +100,6 @@ local screenBinds = {
 			max = 5;
 		})
 		changeRateBinding(newValue)
-		self:Redraw()
 	end)
 }
 
@@ -77,62 +107,13 @@ for i, bind in pairs(screenBinds) do
 	bind:stop()
 end
 
-local function SongButton(instance, song, songNum)
-	return Roact.createElement("ImageButton", {
-		Size = UDim2.new(0.975,0,0,60);
-		BackgroundColor3 = song:GetButtonColor();
-		Position = UDim2.new(0,0,0,(songNum-1)*60);
-		Image = "";
-		BorderSizePixel = 0;
-		[Roact.Event.MouseButton1Click] = function()
-			self.curSelected = song
-			self:UpdateLeaderboard()
-			self:UpdateMapInfo()
-		end
-	}, {
-		Difficulty = Roact.createElement("TextLabel", {
-			AnchorPoint = Vector2.new(0,0.5);
-			Size = UDim2.new(0.125,0,0.8,0);
-			BackgroundTransparency = 1;
-			Position = UDim2.new(0.01,0,0.5,0);
-			TextScaled = true;
-			Font = Enum.Font.GothamBlack;
-			TextColor3 = Color3.fromRGB(255, 255, 255);
-			TextStrokeTransparency = 0.75;
-			Text = "["..Math.avg(tonumber(song:GetDifficulty())*rateMult).."]",
-		}),
-		SongName = Roact.createElement("TextLabel", {
-			Size = UDim2.new(0.85,0,0.5,0);
-			BackgroundTransparency = 1;
-			Position = UDim2.new(0.15,0,0.05,0);
-			TextScaled = true;
-			Font = Enum.Font.GothamBlack;
-			TextColor3 = Color3.fromRGB(255, 255, 255);
-			TextStrokeTransparency = 0.75;
-			Text = song:GetSongName(),
-			TextXAlignment = Enum.TextXAlignment.Left;
-		}),
-		ArtistAndMapperName = Roact.createElement("TextLabel", {
-			Size = UDim2.new(0.85,0,0.4,0);
-			BackgroundTransparency = 1;
-			Position = UDim2.new(0.15,0,0.5,0);
-			TextScaled = true;
-			Font = Enum.Font.GothamBlack;
-			TextColor3 = Color3.fromRGB(255, 255, 255);
-			TextStrokeTransparency = 0.75;
-			Text = string.format("%s - %s", song:GetArtist(), song:GetCreator());
-			TextXAlignment = Enum.TextXAlignment.Left;
-		}),
-	})
-end
-
 local function getNPSGraph(props)
 	local graph = Graph.new("Bar")
-	if self.curSelected ~= nil then
+	if self_.curSelected ~= nil then
 		local lowColor = Color3.fromRGB(237, 255, 148)
 		local highColor = Color3.fromRGB(255, 0, 191)
 		local maxColorNps = 32
-		local c = self.curSelected
+		local c = self_.curSelected
 		local n = c:GetNpsGraph()
 		local r = Settings.Options.Rate or 1
 		graph.xfloor = 0
@@ -156,7 +137,7 @@ local function LeaderboardSlot(data,slotNum)
 		Position = UDim2.new(0,0,0,(slotNum-1)*72);
 		BorderSizePixel = 0;
 		[Roact.Event.MouseButton1Click] = function(rbx)
-			self:Unmount()
+			self_:Unmount()
 			Screens:FindScreen("ResultsScreen"):DoResults({
 				marv = data.marv;
 				perf = data.perf;
@@ -164,15 +145,15 @@ local function LeaderboardSlot(data,slotNum)
 				good = data.good;
 				okay = data.okay;
 				miss = data.miss;
-				total = self.curSelected:GetObjectNumber();
+				total = self_.curSelected:GetObjectNumber();
 				acc = data.accuracy;
 				score = data.score;
 				chain = 0;
 				maxcombo = data.combo;
 				playername = data.username;
 				playerid = data.userid;
-				song = self.curSelected;
-				songlen = self.curSelected:GetLength()/1000;
+				song = self_.curSelected;
+				songlen = self_.curSelected:GetLength()/1000;
 				rate = data.rate;
 				datetime = DateTime:GetDateTime(data.epochtime);
 			})
@@ -212,12 +193,13 @@ local function LeaderboardSlot(data,slotNum)
 end
 
 local function SongButtons(props)
-	local bttns = {}	
-	for i, song in pairs(props.songs) do
+	local ret = {}	
+	for i, button in pairs(self_.SongButtons) do
+		local song = button.props.song
 		local doAdd = Search:find(song:ConcatMetadata(), props.search)
-		if doAdd then bttns[#bttns+1] = SongButton(song.instance, song, i) end
+		if doAdd then ret[#ret+1] = song end
 	end
-	return Roact.createFragment(bttns), #bttns
+	return Roact.createFragment(ret), #ret
 end
 
 local function Leaderboard()
@@ -231,13 +213,21 @@ local function Leaderboard()
 	return Roact.createFragment(lb_gui)
 end
 
-local function Base()
+function SongSelectScreen:init()
+	self:setState({
+		name = "SongSelectScreen"
+	})
+end
+
+function SongSelectScreen:render()
 	rateMult = Metrics:CalculateRateMult(Settings.Options.Rate or 1)
 	local sbuttons, found = SongButtons({
 		songs = songs;
 		search = search or nil
 	})
-	return Roact.createElement("ScreenGui",{},{
+	return Roact.createElement("ScreenGui",{
+		Enabled = self.props.curScreen == self.state.name
+	}, {
 		SongSelectFrame=Roact.createElement("Frame", {
 			Size = UDim2.new(1,0,1,0);
 			AnchorPoint = Vector2.new(0.5,0.5);
@@ -337,8 +327,11 @@ local function Base()
 					TextStrokeTransparency = 0.75;
 					Font = Enum.Font.GothamBlack;
 					TextColor3 = Color3.fromRGB(255, 255, 255);
-					Text = rateBinding:map(function(rate)
-						local length = self.curSelected:GetLength()
+					Text = rateBinding:map(function(rate) 
+						if true then
+							return
+						end
+						local length = self_.curSelected:GetLength()
 						local dtTime = DateTime:GetDateTime((length/1000)/rate)
 						local formatted = dtTime:format("Song Length: #m:#s")
 						return formatted
@@ -383,8 +376,6 @@ local function Base()
 							text = nil
 						end
 						search = text
-						tree = Base()
-						Roact.update(handle,tree)
 					end;
 				});
 			}),
@@ -458,7 +449,7 @@ local function Base()
 				ImageColor3 = Color3.fromRGB(232, 49, 49),
 				AnchorPoint =  Vector2.new(0,1),
 				[Roact.Event.MouseButton1Click] = function()
-					self:Unmount()
+					self_:Unmount()
 					Screens:FindScreen("MainMenuScreen"):DoOptions()
 				end;
 			}, {
@@ -490,11 +481,11 @@ local function Base()
 				[Roact.Event.MouseButton1Click] = function()
 					FastSpawn(function()
 						local g = Game:new()
-						self:Unmount()
+						self_:Unmount()
 						local rate = Settings.Options.Rate
 						local note_color_opt = Settings.Options.NoteColor
 						local noteColor = Color:convertHSV(note_color_opt)
-						g:StartGame(self.curSelected, rate, Settings.Options.Keybinds, noteColor, Settings.Options.ScrollSpeed)
+						g:StartGame(self_.curSelected, rate, Settings.Options.Keybinds, noteColor, Settings.Options.ScrollSpeed)
 
 
 						local gamejoin=g._local_services._game_join;
@@ -504,7 +495,7 @@ local function Base()
 						local songlen = gamejoin:get_songLength()/1000
 						local data = gamejoin:get_data()
 
-						--_marv_count,_perfect_count,_great_count,_good_count,_ok_count,_miss_count,_total_count,self:get_acc(),self._score,self._chain,_max_chain
+						--_marv_count,_perfect_count,_great_count,_good_count,_ok_count,_miss_count,_total_count,self_:get_acc(),self_._score,self_._chain,_max_chain
 						
 						Screens:FindScreen("ResultsScreen"):DoResults({
 							marv = data[1];
@@ -521,7 +512,7 @@ local function Base()
 							npsgraph = gamejoin:GetMsDeviance();
 							playername = LocalPlayer.Name;
 							playerid = LocalPlayer.UserId;
-							song = self.curSelected;
+							song = self_.curSelected;
 							songlen = songlen;
 							rate = rate;
 						}, not g.force_quit)
@@ -547,52 +538,7 @@ local function Base()
 	})
 end
 
-function self:DoSongSelect()
-	changeRateBinding(Settings.Options.Rate)
-	for i, bind in pairs(screenBinds) do
-		bind:begin()
-	end
-	Logger:Log("Entering song select...")
-	tree = Base()
-	handle = Roact.mount(tree, PlayerGui, "SongSelect")
-	Logger:Log("Song select screen mounted!")
-end
+--[[]]--
+	--})
 
-function self:Redraw()
-	tree = Base()
-	Roact.update(handle,tree)
-end
-
-function self:Unmount()
-	for i, bind in pairs(screenBinds) do
-		print("Stopping bind...")
-		bind:stop()
-	end
-	Roact.unmount(handle)
-	Logger:Log("Song select screen unmounted!")
-end
-
-function self:UpdateLeaderboard()
-	Logger:Log("Leaderboard updated...")
-	spawn(function()
-		lb = Online:GetMapLeaderboard(self.curSelected:GetId())
-		tree = Base()
-		Roact.update(handle,tree)
-	end)
-end
-function self:UpdateMapInfo()
-	Logger:Log("Map info updated...")
-	spawn(function()
-		mapname = self.curSelected:GetSongName()
-		artistname = self.curSelected:GetArtist()
-		if self.curSelected:GetDifficultyName() == nil then
-			diffname = "["..(Math.avg(tonumber(self.curSelected:GetDifficulty()) + 0.5)*rateMult).."]"
-		else
-			diffname = "["..(Math.avg(tonumber(self.curSelected:GetDifficulty()) + 0.5)*rateMult).."] "..self.curSelected:GetDifficultyName()
-		end
-		tree = Base()
-		Roact.update(handle,tree)
-	end)
-end
-
-return self
+return SongSelectScreen

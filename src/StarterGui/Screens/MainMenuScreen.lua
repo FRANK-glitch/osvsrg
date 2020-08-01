@@ -405,8 +405,7 @@ function MainMenuScreen:render()
 				SliceScale = 1,
 				ImageColor3 = Color3.fromRGB(27, 27, 27),
 				[Roact.Event.MouseButton1Click] = function()
-					self:Unmount()
-					Screens:FindScreen("MultiScreen"):ShowList()
+					
 				end
 			}, {
 				Label = Roact.createElement("TextLabel", {

@@ -61,10 +61,11 @@ local app = Roact.createElement(RoactRodux.StoreProvider, {
     Roact.createElement("ScreenGui", {}, {
         MainMenuScreen = Roact.createElement(Screen, {name="MainMenuScreen"});
         OptionsScreen = Roact.createElement(Screen, {name="OptionsScreen"});
+        SongSelectScreen = Roact.createElement(Screen, {name="SongSelectScreen"})
     })
 })
 
-Roact.mount(app, LocalPlayer.PlayerGui)
+Roact.mount(app, LocalPlayer.PlayerGui, "GameUI")
 
 
 -- CMDR STUFF
