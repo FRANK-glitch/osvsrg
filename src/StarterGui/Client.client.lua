@@ -13,30 +13,39 @@ local LocalPlayer = game.Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local Screens = PlayerGui:WaitForChild("Screens")
 local Utils = script.Parent:WaitForChild("Utils")
+local SongLibrary = require(Utils.Songs)
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Roact = require(ReplicatedStorage.Roact)
 local Rodux = require(ReplicatedStorage.Rodux)
 local RoactRodux = require(ReplicatedStorage.RoactRodux)
 
+SongLibrary:Initialize()
+
 local store = Rodux.Store.new(function(state, action)
-    state = state or {
-        curScreen = nil
-    }
+    state = state or {}
 
     if action.type == "switchScreen" then
         state.curScreen = action.screen
     end
 
+    if action.type == "switchSong" then
+        state.curSelected = action.song
+    end
+
     return state
 end,{},{Rodux.loggerMiddleware})
 
+local songs = SongLibrary:GetAllSongs()
+
 store:dispatch({type = "switchScreen", screen = "MainMenuScreen"})
+store:dispatch({type = "switchSong", song = songs[1]})
 
 local ScreenCon = RoactRodux.connect(
     function(state, props)
         return {
-            curScreen = state.curScreen
+            curScreen = state.curScreen;
+            curSelected = state.curSelected;
         }
     end,
     function(dispatch)
@@ -46,7 +55,10 @@ local ScreenCon = RoactRodux.connect(
 					type = "switchScreen";
 					screen = screen;
 				})
-			end
+            end;
+            changeSong = function(song)
+                dispatch({type = "switchSong", song = song})
+            end
         }
     end
 )

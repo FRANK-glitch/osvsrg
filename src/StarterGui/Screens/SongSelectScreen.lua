@@ -32,37 +32,8 @@ local songs = SongLibrary:GetAllSongs()
 
 local SongSelectScreen = Roact.Component:extend("SongSelectScreen")
 
-local self_ = {
-	State = Rodux.Store.new(function(state, action)
-		state = state or {
-			curSelected = songs[1];
-			rate = 1;
-		}
+local self_ = {}
 
-		if action.type == "changeSong" then
-			state.curSelected = action.song
-		end
-
-		return;
-	end);
-	SongButtons = (function()
-		local bttns = {}
-
-		for i, v in pairs(songs) do
-			bttns[i] = Roact.createElement(SongButton, {
-				song = v;
-				songNum = i;
-				changeSong = function()
-					self_.State:dispatch({type = "changeSong", song = v})
-					print(self_.State:getState().curSelected:ConcatMetadata())
-				end
-			})
-		end
-
-		return bttns
-	end)()
-}
-	
 local maxSlots = 50
 
 local rateMult = 1
@@ -71,9 +42,6 @@ local search = nil
 local lb = {}
 local lb_gui = {}
 self_.curSelected = nil
-local mapname = ""
-local diffname = ""
-local artistname = ""
 
 local function getNumSlots()
 	local num = #lb
@@ -197,7 +165,7 @@ local function SongButtons(props)
 	for i, button in pairs(self_.SongButtons) do
 		local song = button.props.song
 		local doAdd = Search:find(song:ConcatMetadata(), props.search)
-		if doAdd then ret[#ret+1] = song end
+		if doAdd then ret[#ret+1] = button end
 	end
 	return Roact.createFragment(ret), #ret
 end
@@ -214,6 +182,23 @@ local function Leaderboard()
 end
 
 function SongSelectScreen:init()
+	local bttns = {}
+	for i, v in pairs(songs) do
+		bttns[i] = Roact.createElement(SongButton, {
+			song = v;
+			songNum = i;
+			changeSong = function()
+				self.props.changeSong(v)
+			end
+		})
+	end
+
+	print(game:GetService("HttpService"):JSONEncode(self.props))
+
+	self_.SongButtons = bttns
+
+	self.props.changeSong(songs[1])
+
 	self:setState({
 		name = "SongSelectScreen"
 	})
@@ -225,6 +210,7 @@ function SongSelectScreen:render()
 		songs = songs;
 		search = search or nil
 	})
+
 	return Roact.createElement("ScreenGui",{
 		Enabled = self.props.curScreen == self.state.name
 	}, {
@@ -264,7 +250,7 @@ function SongSelectScreen:render()
 				}, {
 					Data = Roact.createElement("TextLabel", {
 						AnchorPoint = Vector2.new(0.5,0.5);
-						Text = artistname;
+						Text = self.props.curSelected:GetArtist();
 						TextColor3 = Color3.new(1,1,1);
 						TextScaled = true;
 						BackgroundTransparency = 1;
@@ -286,7 +272,7 @@ function SongSelectScreen:render()
 				}, {
 					Data = Roact.createElement("TextLabel", {
 						AnchorPoint = Vector2.new(0.5,0.5);
-						Text = mapname;
+						Text = self.props.curSelected:GetSongName();
 						TextColor3 = Color3.new(1,1,1);
 						TextScaled = true;
 						BackgroundTransparency = 1;
@@ -308,7 +294,7 @@ function SongSelectScreen:render()
 				}, {
 					Data = Roact.createElement("TextLabel", {
 						AnchorPoint = Vector2.new(0.5,0.5);
-						Text = diffname;
+						Text = "";
 						TextColor3 = Color3.new(1,1,1);
 						TextScaled = true;
 						BackgroundTransparency = 1;
@@ -535,10 +521,7 @@ function SongSelectScreen:render()
 				});
 			});
 		})
-	})
+	})	
 end
-
---[[]]--
-	--})
 
 return SongSelectScreen
