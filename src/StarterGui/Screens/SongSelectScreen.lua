@@ -2,8 +2,9 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Roact = require(ReplicatedStorage.Roact)
 local Rodux = require(ReplicatedStorage.Rodux)
 local RoactRodux = require(ReplicatedStorage.RoactRodux)
-local FastSpawn = require(game.ReplicatedStorage.FastSpawn)
-local DateTime = require(game.ReplicatedStorage.DateTime)
+local FastSpawn = require(ReplicatedStorage.FastSpawn)
+local DateTime = require(ReplicatedStorage.DateTime)
+local Http = require(ReplicatedStorage.Helpers.Http)
 local LocalPlayer = game.Players.LocalPlayer
 
 local Utils = script.Parent.Parent.Utils
@@ -12,12 +13,12 @@ local SongLibrary = require(Utils.Songs)
 local Online = require(Utils.Online)
 local Metrics = require(Utils.Metrics)
 local Math = require(Utils.Math)
-local Settings = require(Utils.Settings)
 local Game = require(Utils.Game)
 local Search = require(Utils.Search)
 local Logger = require(Utils.Logger):register(script)
 local Color = require(Utils.Color)
 local Keybind = require(Utils.Keybind)
+local KeybindPool = require(Utils.KeybindPool)
 local Sorts = require(Utils.Sorts)
 
 local Components = script.Parent.Parent.Components
@@ -33,6 +34,7 @@ local songs = SongLibrary:GetAllSongs()
 local SongSelectScreen = Roact.Component:extend("SongSelectScreen")
 
 local self_ = {}
+self_.Keybinds = KeybindPool:new()
 
 local maxSlots = 50
 
@@ -52,52 +54,6 @@ local function getNumSlots()
 	end
 end
 
-local rateBinding, changeRateBinding = Roact.createBinding(Settings.Options.Rate)
-
-local screenBinds = {
-	Keybind:listen(Enum.KeyCode.Equals, function()
-		local newValue = Settings:Increment("Rate", Settings.Options.SongSelectRateIncrement, {
-			min = 0.5;
-			max = 5;
-		})
-		changeRateBinding(newValue)
-	end);
-	Keybind:listen(Enum.KeyCode.Minus, function()
-		local newValue = Settings:Increment("Rate", -Settings.Options.SongSelectRateIncrement, {
-			min = 0.5;
-			max = 5;
-		})
-		changeRateBinding(newValue)
-	end)
-}
-
-for i, bind in pairs(screenBinds) do
-	bind:stop()
-end
-
-local function getNPSGraph(props)
-	local graph = Graph.new("Bar")
-	if self_.curSelected ~= nil then
-		local lowColor = Color3.fromRGB(237, 255, 148)
-		local highColor = Color3.fromRGB(255, 0, 191)
-		local maxColorNps = 32
-		local c = self_.curSelected
-		local n = c:GetNpsGraph()
-		local r = Settings.Options.Rate or 1
-		graph.xfloor = 0
-		graph.xceiling = math.floor(c:GetLength()/1000)/r
-		graph.xinterval = 30
-		graph.yceiling = (Math.findMax(n)+5)*r
-		graph.yfloor = 0
-		graph.yinterval = math.floor(graph.yceiling/5)
-		for i, v in pairs(n) do
-			v = v*r
-			graph:AddObject(i, v, lowColor:lerp(highColor, math.clamp(v/maxColorNps, 0, 1)))
-		end
-	end
-	return Roact.createElement(graph.component, props)
-end
-
 local function LeaderboardSlot(data,slotNum)
 	return Roact.createElement("ImageButton", {
 		Size = UDim2.new(0.96,0,0,70);
@@ -105,8 +61,7 @@ local function LeaderboardSlot(data,slotNum)
 		Position = UDim2.new(0,0,0,(slotNum-1)*72);
 		BorderSizePixel = 0;
 		[Roact.Event.MouseButton1Click] = function(rbx)
-			self_:Unmount()
-			Screens:FindScreen("ResultsScreen"):DoResults({
+			local data =  {
 				marv = data.marv;
 				perf = data.perf;
 				great = data.great;
@@ -124,7 +79,7 @@ local function LeaderboardSlot(data,slotNum)
 				songlen = self_.curSelected:GetLength()/1000;
 				rate = data.rate;
 				datetime = DateTime:GetDateTime(data.epochtime);
-			})
+			}
 		end
 	}, {
 		SlotNumber = Roact.createElement("TextLabel", {
@@ -193,7 +148,22 @@ function SongSelectScreen:init()
 		})
 	end
 
-	print(game:GetService("HttpService"):JSONEncode(self.props))
+	local kbpool = self_.Keybinds
+
+	kbpool:AddKeybinds({
+		Keybind:listen(Enum.KeyCode.Minus, function()
+			local settings = self.props.settings
+			local curRate = settings.Rate
+			curRate = curRate - settings.RateIncrement
+			self.props.changeSetting("Rate", curRate)
+		end),
+		Keybind:listen(Enum.KeyCode.Equals, function()
+			local settings = self.props.settings
+			local curRate = settings.Rate
+			curRate = curRate + settings.RateIncrement
+			self.props.changeSetting("Rate", curRate)
+		end)
+	})
 
 	self_.SongButtons = bttns
 
@@ -205,7 +175,16 @@ function SongSelectScreen:init()
 end
 
 function SongSelectScreen:render()
-	rateMult = Metrics:CalculateRateMult(Settings.Options.Rate or 1)
+	local rate = self.props.settings.Rate
+
+	local rate_s = "Song Rate: " .. rate .. "x"
+	
+	rateMult = Metrics:CalculateRateMult(rate or 1)
+
+	local length = self.props.curSelected:GetLength()
+	local dtTime = DateTime:GetDateTime((length/1000)/rate)
+	local songLength = dtTime:format("Song Length: #m:#s")
+
 	local sbuttons, found = SongButtons({
 		songs = songs;
 		search = search or nil
@@ -313,15 +292,7 @@ function SongSelectScreen:render()
 					TextStrokeTransparency = 0.75;
 					Font = Enum.Font.GothamBlack;
 					TextColor3 = Color3.fromRGB(255, 255, 255);
-					Text = rateBinding:map(function(rate) 
-						if true then
-							return
-						end
-						local length = self_.curSelected:GetLength()
-						local dtTime = DateTime:GetDateTime((length/1000)/rate)
-						local formatted = dtTime:format("Song Length: #m:#s")
-						return formatted
-					end);
+					Text = songLength;
 				}),
 				SongRate = Roact.createElement("TextLabel", {
 					Position = UDim2.new(0.99,0,0.845555,0);
@@ -333,9 +304,7 @@ function SongSelectScreen:render()
 					TextStrokeTransparency = 0.75;
 					Font = Enum.Font.GothamBlack;
 					TextColor3 = Color3.fromRGB(255, 255, 255);
-					Text = rateBinding:map(function(rate)
-						return string.format("Song Rate: %0.2fx", rate)
-					end);
+					Text = rate_s;
 				})
 			}),
 			SearchBox = Roact.createElement("Frame", {
@@ -390,13 +359,13 @@ function SongSelectScreen:render()
 					Leaderboard = Roact.createElement(Leaderboard);
 				});
 			}),
-			NpsGraph = getNPSGraph({
+			--[[NpsGraph = Roact.createElement(, {
 				Size = UDim2.new(0.27,0,0.35,0),
 				Anchor = Vector2.new(0.5,1),
 				Position = UDim2.new(0.45,0,0.99,0),
 				BSizePixel = 0,
 				ZIndex = 2,
-			}),
+			}),]]--
 			Songs = Roact.createElement("Frame", {
 				AnchorPoint = Vector2.new(1,0);
 				Position = UDim2.new(0.99, 0,0.22, 0),
@@ -435,8 +404,7 @@ function SongSelectScreen:render()
 				ImageColor3 = Color3.fromRGB(232, 49, 49),
 				AnchorPoint =  Vector2.new(0,1),
 				[Roact.Event.MouseButton1Click] = function()
-					self_:Unmount()
-					Screens:FindScreen("MainMenuScreen"):DoOptions()
+					self.props.switchScreens("MainMenuScreen")
 				end;
 			}, {
 				BackButton = Roact.createElement("TextLabel", {
@@ -465,6 +433,13 @@ function SongSelectScreen:render()
 				ImageColor3 = Color3.fromRGB(43, 255, 110),
 				AnchorPoint =  Vector2.new(0,1),
 				[Roact.Event.MouseButton1Click] = function()
+					if true then
+						local settings = self.props.settings
+						local curRate = settings.Rate
+						curRate = curRate - settings.RateIncrement
+						self.props.changeSetting("Rate", curRate)
+						return
+					end
 					FastSpawn(function()
 						local g = Game:new()
 						self_:Unmount()
