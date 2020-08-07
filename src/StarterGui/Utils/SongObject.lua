@@ -95,8 +95,9 @@ function SongObject:new(instance)
 						lastIndex = io
 						points[#points+1] = nps
 						break
+					else
+						nps = nps + 1
 					end
-					nps = nps + 1
 				end
 				nps = 0
 			end
