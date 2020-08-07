@@ -23,6 +23,7 @@ local Sorts = require(Utils.Sorts)
 
 local Components = script.Parent.Parent.Components
 local SongButton = require(Components.SongButton)
+local NpsGraph = require(Components.NpsGraph)
 
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
@@ -168,10 +169,6 @@ function SongSelectScreen:init()
 	self_.SongButtons = bttns
 
 	self.props.changeSong(songs[1])
-
-	self:setState({
-		name = "SongSelectScreen"
-	})
 end
 
 function SongSelectScreen:render()
@@ -191,7 +188,7 @@ function SongSelectScreen:render()
 	})
 
 	return Roact.createElement("ScreenGui",{
-		Enabled = self.props.curScreen == self.state.name
+		Enabled = self.props.curScreen == script.Name
 	}, {
 		SongSelectFrame=Roact.createElement("Frame", {
 			Size = UDim2.new(1,0,1,0);

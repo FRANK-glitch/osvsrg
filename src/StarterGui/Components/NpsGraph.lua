@@ -38,7 +38,14 @@ function NpsGraph:render()
 			v = v*r
 			graph:AddObject(i, v, lowColor:lerp(highColor, math.clamp(v/maxColorNps, 0, 1)))
 		end
-    end
+	end
+	return Roact.createElement(graph.component, {
+		Size = self.props.Size,
+		AnchorPoint = self.props.AnchorPoint,
+		Position = self.props.Position,
+		BorderSizePixel = self.props.BorderSizePixel,
+		ZIndex = self.props.ZIndex,
+	})
 end
 
 return NpsGraph

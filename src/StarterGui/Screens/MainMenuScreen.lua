@@ -62,16 +62,14 @@ local function GetUpdateNotes()
 end
 
 function MainMenuScreen:init()
-	self:setState({
-		name = "MainMenuScreen"
-	})
+	
 end
 
 function MainMenuScreen:render()
 	return Roact.createElement("ScreenGui", {
 		ResetOnSpawn = false,
 		ZIndexBehavior = Enum.ZIndexBehavior.Global,
-		Enabled = self.props.curScreen == self.state.name
+		Enabled = self.props.curScreen == script.Name
 	}, {
 		Menu = Roact.createElement("Frame", {
 			AnchorPoint = Vector2.new(0.5, 0.5),

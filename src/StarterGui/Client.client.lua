@@ -13,6 +13,9 @@ local LocalPlayer = game.Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local Screens = PlayerGui:WaitForChild("Screens")
 local Utils = script.Parent:WaitForChild("Utils")
+local Constants = script.Parent:WaitForChild("Constants")
+local InitialState = require(Constants.InitialState)
+
 local Color = require(Utils.Color)
 local SongLibrary = require(Utils.Songs)
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -20,65 +23,41 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Roact = require(ReplicatedStorage.Roact)
 local Rodux = require(ReplicatedStorage.Rodux)
 local RoactRodux = require(ReplicatedStorage.RoactRodux)
+local Llama = require(ReplicatedStorage:WaitForChild("Llama"))
 
 SongLibrary:Initialize()
 
-local store = Rodux.Store.new(function(state, action)
-    state = state or {}
+local reducer = Rodux.createReducer(InitialState, {
+    modifySetting = function(state, action)
+        return Llama.Dictionary.join(state, {
+            Settings = Llama.Dictionary.join(state.Settings, {
+                [action.setting] = action.value
+            })
+        })
+    end;
+    switchScreen = function(state, action)
+        local newState = {}
+        for i, v in pairs(state) do
+            newState[i] = v
+        end
+        newState.curScreen = action.screen
+        return newState
+    end;
+    switchSong = function(state, action)
+        local newState = {}
+        for i, v in pairs(state) do
+            newState[i] = v
+        end
+        newState.curSelected = action.song
+        return newState
+    end;
+});
 
-    if action.type == "modifySetting" then
-        state.Settings[action.setting] = action.value
-    end
-
-    if action.type == "switchScreen" then
-        state.curScreen = action.screen
-    end
-
-    if action.type == "switchSong" then
-        state.curSelected = action.song
-    end
-
-    return state
-end,{
-    Settings = {
-        ScrollSpeed = 20;
-        NoteColor = Color:newHSV(0,0,255);
-        Rate = 1;
-        ShowGameplayUI = true;
-        Keybinds = {
-            [1] = Enum.KeyCode.Z;
-            [2] = Enum.KeyCode.X;
-            [3] = Enum.KeyCode.Comma;
-            [4] = Enum.KeyCode.Period;
-        };
-        QuickExitKeybind = {
-            [1] = Enum.KeyCode.Backspace;
-        };
-        HideGameplayUI = {
-            [1] = Enum.KeyCode.M;
-        };
-        ScorePos = UDim2.new(0.92,0,0.035,0);
-        AccuracyPos = UDim2.new(0.92,0,0.08,0);
-        ComboPos = UDim2.new(0.5,0,0.2,0);
-        JudgementPos = UDim2.new(0.5,0,0.25,0);
-        RatingPos = UDim2.new(0.065,0,0.05,0);
-        BackButtonPos = UDim2.new(0.923,0,0.955,0);
-        FOV = 70;
-        RateIncrement = 0.05;
-        ShowMarvs = true;
-        ShowPerfs = true;
-        ShowGreats = true;
-        ShowGoods = true;
-        ShowBads = true;
-        ShowMisses = true;
-    }
-})
+local store = Rodux.Store.new(reducer)
 
 --,{Rodux.loggerMiddleware}
 
 local songs = SongLibrary:GetAllSongs()
-
-store:dispatch({type = "switchScreen", screen = "MainMenuScreen"})
 store:dispatch({type = "switchSong", song = songs[1]})
 
 local ScreenCon = nil
@@ -92,8 +71,6 @@ ScreenCon = RoactRodux.connect(
             curSelected = state.curSelected;
             settings = state.Settings;
         }
-        print(RoactRodux.shallowEqual(state, otable))
-        otable = newState
         return newState
     end,
     function(dispatch)
