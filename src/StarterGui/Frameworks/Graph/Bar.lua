@@ -211,13 +211,13 @@ function Dot:new()
 
 	function self.component(props)
 		return Roact.createElement("Frame", {
-			AnchorPoint=props.Anchor or Vector2.new(0,0);
+			AnchorPoint=props.AnchorPoint or Vector2.new(0,0);
 			Position=props.Position or UDim2.new(0,0,0,0);
 			Size=props.Size or UDim2.new(0.2,0,0.4,0);
-			BackgroundColor3=props.BGColor or Color3.new(0.1,0.1,0.1);
+			BackgroundColor3=props.BackgroundColor3 or Color3.new(0.1,0.1,0.1);
 			ClipsDescendants=true;
             ZIndex=props.ZIndex or 1;
-            BorderSizePixel=props.BSizePixel or 0;
+            BorderSizePixel=props.BorderSizePixel or 0;
 		}, {
 			Objects=Roact.createElement(Bars, props);
 			Markers=Roact.createElement(Markers, props);

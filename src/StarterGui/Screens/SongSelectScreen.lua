@@ -356,13 +356,15 @@ function SongSelectScreen:render()
 					Leaderboard = Roact.createElement(Leaderboard);
 				});
 			}),
-			--[[NpsGraph = Roact.createElement(, {
+			NpsGraph = Roact.createElement(NpsGraph, {
 				Size = UDim2.new(0.27,0,0.35,0),
-				Anchor = Vector2.new(0.5,1),
+				AnchorPoint = Vector2.new(0.5,1),
 				Position = UDim2.new(0.45,0,0.99,0),
-				BSizePixel = 0,
+				BorderSizePixel = 0,
 				ZIndex = 2,
-			}),]]--
+				settings = self.props.settings,
+				curSelected = self.props.curSelected,
+			});
 			Songs = Roact.createElement("Frame", {
 				AnchorPoint = Vector2.new(1,0);
 				Position = UDim2.new(0.99, 0,0.22, 0),

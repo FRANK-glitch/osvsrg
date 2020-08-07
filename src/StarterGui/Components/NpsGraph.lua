@@ -3,7 +3,7 @@ local Roact = require(ReplicatedStorage.Roact)
 local Rodux = require(ReplicatedStorage.Rodux)
 local RoactRodux = require(ReplicatedStorage.RoactRodux)
 
-local PlayerGui = game.LocalPlayer:WaitForChild("PlayerGui")
+local PlayerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
 local Frameworks = PlayerGui.Frameworks
 local Graph = require(Frameworks.Graph)
@@ -13,10 +13,6 @@ local Metrics = require(Utils.Metrics)
 local Math = require(Utils.Math)
 
 local NpsGraph = Roact.Component:extend("NpsGraph")
-
-function NpsGraph:init()
-    
-end
 
 function NpsGraph:render()
     local graph = Graph.new("Bar")

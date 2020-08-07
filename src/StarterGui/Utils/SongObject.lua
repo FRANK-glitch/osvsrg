@@ -82,17 +82,23 @@ function SongObject:new(instance)
 	function self:GetNpsGraph()
 		if cachedNpsGraph == nil then
 			local points = {}
-			local lastMs = 0
 			local objects = self:GetData().HitObjects
-			local curNps = 0
-			for i, object in pairs(objects) do
-				local curTime = object.Time
-				if curTime - lastMs > 1000 then
-					lastMs = curTime
-					points[#points+1] = curNps
-					curNps = 0
+			local length = self:GetLength()
+
+			local nps = 0
+			local lastIndex = 1
+
+			for i = 0, length, 1000 do
+				for io = lastIndex, #objects do
+					local itr_obj = objects[io]
+					if itr_obj.Time > i then
+						lastIndex = io
+						points[#points+1] = nps
+						break
+					end
+					nps = nps + 1
 				end
-				curNps = curNps + 1
+				nps = 0
 			end
 			cachedNpsGraph = points
 		end
