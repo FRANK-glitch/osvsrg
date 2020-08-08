@@ -259,150 +259,68 @@ function MainMenuScreen:render()
 					})
 				})
 			}),
+			--[[
+				size = UDim2.new(0.25, 0, 0.08, 0),
+
+				xUDim2.new(0.025, 0, 0.48, 0)
+				UDim2.new(0.025, 0, 0.58, 0)
+				UDim2.new(0.025, 0, 0.68, 0)
+				UDim2.new(0.025, 0, 0.78, 0)
+				UDim2.new(0.025, 0, 0.88, 0)
+			]]--
 			PlayButton = Roact.createElement(MenuOption, {
 				Size = UDim2.new(0.25, 0, 0.08, 0),
-				Position = self._position,
+				Position = UDim2.new(0.025, 0, 0.38, 0),
 				ZIndex = 2,
 				Text = "PLAY",
 				OnClick = function()
 					self.props.switchScreens("SongSelectScreen")
 				end;
 			}),
-			RankingButton = Roact.createElement("ImageButton", {
+			RankingsButton = Roact.createElement(MenuOption, {
 				Size = UDim2.new(0.25, 0, 0.08, 0),
 				Position = UDim2.new(0.025, 0, 0.48, 0),
 				ZIndex = 2,
-				BorderSizePixel = 0,
-				BackgroundTransparency = 1,
-				ScaleType = Enum.ScaleType.Slice,
-				Image = "rbxassetid://2790382281",
-				SliceCenter = Rect.new(4, 4, 252, 252),
-				SliceScale = 1,
-				ImageColor3 = Color3.fromRGB(27, 27, 27)
-			}, {
-				Label = Roact.createElement("TextLabel", {
-					AnchorPoint = Vector2.new(0.5, 0.5),
-					Size = UDim2.new(0.85, 0, 0.6, 0),
-					Position = UDim2.new(0.5, 0, 0.5, 0),
-					ZIndex = 3,
-					BorderSizePixel = 0,
-					BackgroundTransparency = 1,
-					Text = "RANKING",
-					Font = Enum.Font.GothamBlack,
-					TextScaled = true,
-					TextWrapped = true,
-					TextColor3 = Color3.fromRGB(255, 255, 255)
-				})
+				Text = "RANKING",
+				OnClick = function()
+					self.props.switchScreens("SongSelectScreen")
+				end;
 			}),
-			OptionsButton = Roact.createElement("ImageButton", {
+			OptionsButton = Roact.createElement(MenuOption, {
 				Size = UDim2.new(0.25, 0, 0.08, 0),
 				Position = UDim2.new(0.025, 0, 0.58, 0),
 				ZIndex = 2,
-				BorderSizePixel = 0,
-				BackgroundTransparency = 1,
-				ScaleType = Enum.ScaleType.Slice,
-				Image = "rbxassetid://2790382281",
-				SliceCenter = Rect.new(4, 4, 252, 252),
-				SliceScale = 1,
-				ImageColor3 = Color3.fromRGB(27, 27, 27),
-				[Roact.Event.MouseButton1Click] = function()
-					self.props.switchScreens("OptionsScreen")
-				end
-			}, {
-				Label = Roact.createElement("TextLabel", {
-					AnchorPoint = Vector2.new(0.5, 0.5),
-					Size = UDim2.new(0.85, 0, 0.6, 0),
-					Position = UDim2.new(0.5, 0, 0.5, 0),
-					ZIndex = 3,
-					BorderSizePixel = 0,
-					BackgroundTransparency = 1,
-					Text = "OPTIONS",
-					Font = Enum.Font.GothamBlack,
-					TextScaled = true,
-					TextWrapped = true,
-					TextColor3 = Color3.fromRGB(255, 255, 255)
-				})
+				Text = "OPTIONS",
+				OnClick = function()
+					self.props.switchScreens("SongSelectScreen")
+				end;
 			}),
-			SpectateButton = Roact.createElement("ImageButton", {
+			SpectateButton = Roact.createElement(MenuOption, {
 				Size = UDim2.new(0.25, 0, 0.08, 0),
 				Position = UDim2.new(0.025, 0, 0.68, 0),
 				ZIndex = 2,
-				BorderSizePixel = 0,
-				BackgroundTransparency = 1,
-				ScaleType = Enum.ScaleType.Slice,
-				Image = "rbxassetid://2790382281",
-				SliceCenter = Rect.new(4, 4, 252, 252),
-				SliceScale = 1,
-				ImageColor3 = Color3.fromRGB(27, 27, 27)
-			}, {
-				Label = Roact.createElement("TextLabel", {
-					AnchorPoint = Vector2.new(0.5, 0.5),
-					Size = UDim2.new(0.85, 0, 0.6, 0),
-					Position = UDim2.new(0.5, 0, 0.5, 0),
-					ZIndex = 3,
-					BorderSizePixel = 0,
-					BackgroundTransparency = 1,
-					Text = "SPECTATE",
-					Font = Enum.Font.GothamBlack,
-					TextScaled = true,
-					TextWrapped = true,
-					TextColor3 = Color3.fromRGB(255, 255, 255)
-				})
+				Text = "SPECTATE",
+				OnClick = function()
+					self.props.switchScreens("SongSelectScreen")
+				end;
 			}),
-			LeaderboardButton = Roact.createElement("ImageButton", {
+			LeaderboardButton = Roact.createElement(MenuOption, {
 				Size = UDim2.new(0.25, 0, 0.08, 0),
 				Position = UDim2.new(0.025, 0, 0.78, 0),
 				ZIndex = 2,
-				BorderSizePixel = 0,
-				BackgroundTransparency = 1,
-				ScaleType = Enum.ScaleType.Slice,
-				Image = "rbxassetid://2790382281",
-				SliceCenter = Rect.new(4, 4, 252, 252),
-				SliceScale = 1,
-				ImageColor3 = Color3.fromRGB(27, 27, 27)
-			}, {
-				Label = Roact.createElement("TextLabel", {
-					AnchorPoint = Vector2.new(0.5, 0.5),
-					Size = UDim2.new(0.85, 0, 0.6, 0),
-					Position = UDim2.new(0.5, 0, 0.5, 0),
-					ZIndex = 3,
-					BorderSizePixel = 0,
-					BackgroundTransparency = 1,
-					Text = "LEADERBOARD",
-					Font = Enum.Font.GothamBlack,
-					TextScaled = true,
-					TextWrapped = true,
-					TextColor3 = Color3.fromRGB(255, 255, 255)
-				})
+				Text = "LEADERBOARD",
+				OnClick = function()
+					self.props.switchScreens("SongSelectScreen")
+				end;
 			}),
-			MultiButton = Roact.createElement("ImageButton", {
+			MultiButton = Roact.createElement(MenuOption, {
 				Size = UDim2.new(0.25, 0, 0.08, 0),
 				Position = UDim2.new(0.025, 0, 0.88, 0),
 				ZIndex = 2,
-				BorderSizePixel = 0,
-				BackgroundTransparency = 1,
-				ScaleType = Enum.ScaleType.Slice,
-				Image = "rbxassetid://2790382281",
-				SliceCenter = Rect.new(4, 4, 252, 252),
-				SliceScale = 1,
-				ImageColor3 = Color3.fromRGB(27, 27, 27),
-				[Roact.Event.MouseButton1Click] = function()
-					
-				end
-			}, {
-				Label = Roact.createElement("TextLabel", {
-					AnchorPoint = Vector2.new(0.5, 0.5),
-					Size = UDim2.new(0.85, 0, 0.6, 0),
-					Position = UDim2.new(0.5, 0, 0.5, 0),
-					ZIndex = 3,
-					BorderSizePixel = 0,
-					BackgroundTransparency = 1,
-					Text = "MULTIPLAYER",
-					Font = Enum.Font.GothamBlack,
-					TextScaled = true,
-					TextWrapped = true,
-					TextColor3 = Color3.fromRGB(255, 255, 255)
-				})
+				Text = "MULITPLAYER",
+				OnClick = function()
+					self.props.switchScreens("SongSelectScreen")
+				end;
 			}),
 			TopScores = Roact.createElement("ImageLabel", {
 				Size = UDim2.new(0.325, 0, 0.58, 0),
