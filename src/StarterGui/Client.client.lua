@@ -60,12 +60,11 @@ local otable = {}
 
 ScreenCon = RoactRodux.connect(
     function(state, props)
-        local newState = {
+        return {
             curScreen = state.curScreen;
             curSelected = state.curSelected;
             settings = state.Settings;
         }
-        return newState
     end,
     function(dispatch)
         return {
