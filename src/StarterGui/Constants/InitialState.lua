@@ -36,5 +36,6 @@ return {
         ShowGoods = true;
         ShowBads = true;
         ShowMisses = true;
-    }
+    },
+    curSelectedOptionTab = nil;
 }

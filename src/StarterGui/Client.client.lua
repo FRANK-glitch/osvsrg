@@ -42,7 +42,7 @@ local reducer = Rodux.createReducer(InitialState, {
     end;
     switchSong = function(state, action)
         return Llama.Dictionary.join(state, {
-            curScreen = action.song
+            curSelected = action.song
         })
     end;
 });

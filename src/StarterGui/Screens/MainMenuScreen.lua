@@ -292,7 +292,7 @@ function MainMenuScreen:render()
 				ZIndex = 2,
 				Text = "OPTIONS",
 				OnClick = function()
-					self.props.switchScreens("SongSelectScreen")
+					self.props.switchScreens("OptionsScreen")
 				end;
 			}),
 			SpectateButton = Roact.createElement(MenuOption, {
