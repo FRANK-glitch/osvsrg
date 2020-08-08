@@ -1,9 +1,13 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Roact = require(ReplicatedStorage.Roact)
+local RoactAnimate = require(ReplicatedStorage.RoactAnimate)
 local LocalPlayer = game.Players.LocalPlayer
-
+ 
 local Utils = script.Parent.Parent.Utils
-local Screens = require(Utils.ScreenUtil) 
+local Screens = require(Utils.ScreenUtil)
+
+local Components = script.Parent.Parent.Components
+local MenuOption = require(Components.MenuOption) 
 
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local Frameworks = PlayerGui.Frameworks
@@ -62,7 +66,7 @@ local function GetUpdateNotes()
 end
 
 function MainMenuScreen:init()
-	
+
 end
 
 function MainMenuScreen:render()
@@ -255,34 +259,14 @@ function MainMenuScreen:render()
 					})
 				})
 			}),
-			PlayButton = Roact.createElement("ImageButton", {
+			PlayButton = Roact.createElement(MenuOption, {
 				Size = UDim2.new(0.25, 0, 0.08, 0),
-				Position = UDim2.new(0.025, 0, 0.38, 0),
+				Position = self._position,
 				ZIndex = 2,
-				BorderSizePixel = 0,
-				BackgroundTransparency = 1,
-				ScaleType = Enum.ScaleType.Slice,
-				Image = "rbxassetid://2790382281",
-				SliceCenter = Rect.new(4, 4, 252, 252),
-				SliceScale = 1,
-				ImageColor3 = Color3.fromRGB(27, 27, 27),
-				[Roact.Event.MouseButton1Click] = function()
+				Text = "PLAY",
+				OnClick = function()
 					self.props.switchScreens("SongSelectScreen")
-				end
-			}, {
-				Label = Roact.createElement("TextLabel", {
-					AnchorPoint = Vector2.new(0.5, 0.5),
-					Size = UDim2.new(0.85, 0, 0.6, 0),
-					Position = UDim2.new(0.5, 0, 0.5, 0),
-					ZIndex = 3,
-					BorderSizePixel = 0,
-					BackgroundTransparency = 1,
-					Text = "PLAY",
-					Font = Enum.Font.GothamBlack,
-					TextScaled = true,
-					TextWrapped = true,
-					TextColor3 = Color3.fromRGB(255, 255, 255)
-				})
+				end;
 			}),
 			RankingButton = Roact.createElement("ImageButton", {
 				Size = UDim2.new(0.25, 0, 0.08, 0),
