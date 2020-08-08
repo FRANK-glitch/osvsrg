@@ -36,20 +36,14 @@ local reducer = Rodux.createReducer(InitialState, {
         })
     end;
     switchScreen = function(state, action)
-        local newState = {}
-        for i, v in pairs(state) do
-            newState[i] = v
-        end
-        newState.curScreen = action.screen
-        return newState
+        return Llama.Dictionary.join(state, {
+            curScreen = action.screen
+        })
     end;
     switchSong = function(state, action)
-        local newState = {}
-        for i, v in pairs(state) do
-            newState[i] = v
-        end
-        newState.curSelected = action.song
-        return newState
+        return Llama.Dictionary.join(state, {
+            curScreen = action.song
+        })
     end;
 });
 
