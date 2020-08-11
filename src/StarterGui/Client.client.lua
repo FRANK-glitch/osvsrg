@@ -13,6 +13,7 @@ local LocalPlayer = game.Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local Screens = PlayerGui:WaitForChild("Screens")
 local Utils = script.Parent:WaitForChild("Utils")
+local RoduxGameStore = require(Utils.RoduxGameStore)
 local Constants = script.Parent:WaitForChild("Constants")
 local InitialState = require(Constants.InitialState)
 
@@ -45,9 +46,28 @@ local reducer = Rodux.createReducer(InitialState, {
             curSelected = action.song
         })
     end;
+    updateStats = function(state, action)
+        return Llama.Dictionary.join(state,{
+            SongStats = Llama.Dictionary.join(state.SongStats, {
+                score = action.score;
+                combo = action.combo;
+                maxcombo = action.maxcombo;
+                marvs = action.marvs;
+                perfs = action.perfs;
+                greats = action.greats;
+                goods = action.goods;
+                bads = action.bads;
+                miss = action.misses;
+                accuracy = action.accuracy;
+                total = action.total;
+            })   
+        })
+    end
 });
 
 local store = Rodux.Store.new(reducer)
+
+RoduxGameStore:Initialize(store)
 
 --,{Rodux.loggerMiddleware}
 
@@ -64,6 +84,7 @@ ScreenCon = RoactRodux.connect(
             curScreen = state.curScreen;
             curSelected = state.curSelected;
             settings = state.Settings;
+            songStats = state.SongStats;
         }
     end,
     function(dispatch)
@@ -95,6 +116,7 @@ local app = Roact.createElement(RoactRodux.StoreProvider, {
         MainMenuScreen = Roact.createElement(Screen, {name="MainMenuScreen"});
         OptionsScreen = Roact.createElement(Screen, {name="OptionsScreen"});
         SongSelectScreen = Roact.createElement(Screen, {name="SongSelectScreen"});
+        GameplayScreen = Roact.createElement(Screen, {name="GameplayScreen"});
     })
 })
 

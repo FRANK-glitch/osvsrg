@@ -36,6 +36,19 @@ return {
         ShowGoods = true;
         ShowBads = true;
         ShowMisses = true;
-    },
+    };
+    SongStats = {
+        score = 0;
+        combo = 0;
+        maxcombo = 0;
+        marvs = 0;
+        perfs = 0;
+        greats = 0;
+        goods = 0;
+        bads = 0;
+        miss = 0;
+        accuracy = 0;
+        total = 0;
+    };
     curSelectedOptionTab = nil;
 }

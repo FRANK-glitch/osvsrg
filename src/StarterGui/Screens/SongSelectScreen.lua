@@ -432,53 +432,16 @@ function SongSelectScreen:render()
 				ImageColor3 = Color3.fromRGB(43, 255, 110),
 				AnchorPoint =  Vector2.new(0,1),
 				[Roact.Event.MouseButton1Click] = function()
-					if true then
-						local settings = self.props.settings
-						local curRate = settings.Rate
-						curRate = curRate - settings.RateIncrement
-						self.props.changeSetting("Rate", curRate)
-						return
-					end
-					FastSpawn(function()
-						local g = Game:new()
-						self_:Unmount()
-						local rate = Settings.Options.Rate
-						local note_color_opt = Settings.Options.NoteColor
+					FastSpawn(function(song, settings, props)
+						props.switchScreens("GameplayScreen")
+
+						local rate = settings.Rate
+						local note_color_opt = settings.NoteColor
 						local noteColor = Color:convertHSV(note_color_opt)
-						g:StartGame(self_.curSelected, rate, Settings.Options.Keybinds, noteColor, Settings.Options.ScrollSpeed)
-
-
-						local gamejoin=g._local_services._game_join;
-						local localgame=g.local_game;
-						local gamelua=g;
-
-						local songlen = gamejoin:get_songLength()/1000
-						local data = gamejoin:get_data()
-
+						Game:StartGame(song, settings)
 						--_marv_count,_perfect_count,_great_count,_good_count,_ok_count,_miss_count,_total_count,self_:get_acc(),self_._score,self_._chain,_max_chain
-						
-						Screens:FindScreen("ResultsScreen"):DoResults({
-							marv = data[1];
-							perf = data[2];
-							great = data[3];
-							good = data[4];
-							okay = data[5];
-							miss = data[6];
-							total = data[7];
-							acc = data[8];
-							score = data[9];
-							chain = data[10];
-							maxcombo = data[11];
-							npsgraph = gamejoin:GetMsDeviance();
-							playername = LocalPlayer.Name;
-							playerid = LocalPlayer.UserId;
-							song = self_.curSelected;
-							songlen = songlen;
-							rate = rate;
-						}, not g.force_quit)
-						g:DestroyStage()
-						g:DestroyGame()
-					end)
+						--Game:DestroyStage()
+					end, self.props.curSelected, self.props.settings, self.props)
 				end;
 			}, {
 				PlayButtonText = Roact.createElement("TextLabel", {

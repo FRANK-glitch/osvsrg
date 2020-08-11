@@ -19,66 +19,40 @@ local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local Frameworks = PlayerGui.Frameworks
 local Graph = require(Frameworks.Graph)
 
-local self = {}
+local GameplayScreen = Roact.Component:extend("GameplayScreen")
 
-local listenerPool = {}
+local self_ = {}
 
-local handle = {}
-local tree = {}
+function GameplayScreen:init()
 
-local GPlayers = {}
-
-local game_ = nil
-
-local function GetPlayers()
-    local ret = {}
-
-    table.sort(GPlayers, function(a, b)
-        
-    end)
-
-    for i, plr in pairs(GPlayers) do
-        ret[#ret+1] = Roact.createElement("Frame", {
-            Position = UDim2.new(0, 0, (i-1)/#GPlayers, 0);
-            Size = UDim2.new(1,0,1/#GPlayers,0);
-            BackgroundTransparency = 0.8;
-            BackgroundColor3 = Color3.new(0.1,0.1,0.1);
-        }, {
-
-        })
-    end
-    
-    return ret
 end
 
-local function DoBase(props)
-    local playdata = props.Data
-    local rate = props.Rate
-    local song = props.Song
+function GameplayScreen:render()
+    local rate = self.props.settings.Rate
+    local song = self.props.curSelected
+    local songStats = self.props.songStats
+    local settings = self.props.settings
 
-    local marvs = playdata[1]
-	local perfs = playdata[2]
-	local greats = playdata[3]
-	local goods = playdata[4]
-	local okays = playdata[5]
-	local misses = playdata[6]
-	local total = playdata[7]	
-	local acc = playdata[8]
-	local score = playdata[9]
-	local chain = playdata[10]
-    local maxcombo = playdata[11]
 
-    local game_join = game_._local_services._game_join
+    local marvs = songStats.marvs
+    local perfs = songStats.perfs
+    local greats = songStats.greats
+    local goods = songStats.goods
+    local okays = songStats.okays
+    local misses = songStats.misses
+    local total = songStats.total
+    local acc = songStats.accuracy
+    local score = songStats.score
+    local chain = songStats.combo
+    local maxcombo = songStats.maxcombo
+    
+    --local game_join = self_._local_services._game_join
 
     local curTime = 0
     local songLen = 1
 
-    if game_join ~= nil then
-        curTime = game_join:get_songTime()
-        songLen = game_join:get_songLength()
-    end
-
-    local timeLeftMs = songLen - curTime
+    --songLen - curTime
+    local timeLeftMs = 5000
     local timeLeftAlpha = curTime/songLen
     local unformattedTL = DateTime:GetDateTime(timeLeftMs/1000/rate)
     local formattedTL = unformattedTL:format("#m:#s")
@@ -88,7 +62,9 @@ local function DoBase(props)
     local gradedata = Metrics:GetGradeData(acc)
     local tierdata = Metrics:GetTierData(rating)
 
-    return Roact.createElement("ScreenGui", {}, {
+    return Roact.createElement("ScreenGui", {
+        Enabled = self.props.curScreen == script.Name
+    }, {
         Score = Roact.createElement("TextLabel", {
             BackgroundColor3 = Color3.fromRGB(25,25,25);
             TextColor3 = Color3.fromRGB(255,255,255);
@@ -99,9 +75,9 @@ local function DoBase(props)
 			TextWrapped = true;
 			Font = Enum.Font.GothamBlack;
             AnchorPoint = Vector2.new(0.5,0.5);
-            Position = Settings.Options.ScorePos;
+            Position = settings.ScorePos;
             Size = UDim2.new(0.15,0,0.06,0);
-            Visible = Settings.Options.ShowGameplayUI;
+            Visible = settings.ShowGameplayUI;
         });
         Accuracy = Roact.createElement("TextLabel", {
             BackgroundColor3 = Color3.fromRGB(25,25,25);
@@ -113,9 +89,9 @@ local function DoBase(props)
 			TextWrapped = true;
 			Font = Enum.Font.GothamBlack;
             AnchorPoint = Vector2.new(0.5,0.5);
-            Position = Settings.Options.AccuracyPos;
+            Position = settings.AccuracyPos;
             Size = UDim2.new(0.15,0,0.03,0);
-            Visible = Settings.Options.ShowGameplayUI;
+            Visible = settings.ShowGameplayUI;
         });
 		Combo = Roact.createElement("TextLabel", {
 			BackgroundTransparency = 1;
@@ -125,9 +101,9 @@ local function DoBase(props)
 			TextWrapped = true;
 			Font = Enum.Font.GothamBlack;
             AnchorPoint = Vector2.new(0.5,0.5);
-            Position = Settings.Options.ComboPos;
+            Position = settings.ComboPos;
             Size = UDim2.new(0.125,0,0.05,0);
-            Visible = Settings.Options.ShowGameplayUI;
+            Visible = settings.ShowGameplayUI;
         });
 		Judgement = Roact.createElement("TextLabel", {
 			BackgroundTransparency = 1;
@@ -137,9 +113,9 @@ local function DoBase(props)
 			TextWrapped = true;
 			Font = Enum.Font.GothamBlack;
             AnchorPoint = Vector2.new(0.5,0.5);
-            Position = Settings.Options.JudgementPos;
+            Position = settings.JudgementPos;
             Size = UDim2.new(0.15,0,0.05,0);
-            Visible = Settings.Options.ShowGameplayUI;
+            Visible = settings.ShowGameplayUI;
         });
         Rating = Roact.createElement("TextLabel", {
             BackgroundColor3 = Color3.fromRGB(25,25,25);
@@ -150,14 +126,14 @@ local function DoBase(props)
 			TextWrapped = true;
             Font = Enum.Font.GothamBlack;
             AnchorPoint = Vector2.new(0.5,0.5);
-            Position = Settings.Options.RatingPos;
+            Position = settings.RatingPos;
             Size = UDim2.new(0.125,0,0.05,0);
-            Visible = Settings.Options.ShowGameplayUI;
+            Visible = settings.ShowGameplayUI;
         });
 		BackButton = Roact.createElement("ImageButton", {
 			Size = UDim2.new(0.14, 0, 0.06, 0),
 			AnchorPoint = Vector2.new(0.5,0.5);
-			Position = Settings.Options.BackButtonPos;
+			Position = settings.BackButtonPos;
 			BorderSizePixel = 0,
 			BackgroundTransparency = 1,
 			ScaleType = Enum.ScaleType.Slice,
@@ -186,7 +162,7 @@ local function DoBase(props)
             AnchorPoint = Vector2.new(0,1);
             Position = UDim2.new(0,0,1,0);
 			      BackgroundColor3 = Color3.fromRGB(122, 122, 122);
-			      Visible = Settings.Options.ShowGameplayUI;
+			      Visible = settings.ShowGameplayUI;
         });
         TimeLeftTextLabel = Roact.createElement("TextLabel", {
             Text = formattedTL;
@@ -200,44 +176,9 @@ local function DoBase(props)
             Position = UDim2.new(0.005,0,0.995,0);
             Font = Enum.Font.GothamBlack;
             BackgroundColor3 = Color3.fromRGB(122, 122, 122);
-            Visible = Settings.Options.ShowGameplayUI;
+            Visible = settings.ShowGameplayUI;
         });
     })
 end
 
-function self:Initialize(props, g)
-    game_ = g
-
-    Logger:Log("Initializing stage...")
-
-    listenerPool[#listenerPool+1] = Keybind:listen(Settings.Options.QuickExitKeybind[1], function()
-        game_.force_quit = true
-	end)
-	
-	listenerPool[#listenerPool+1] = Keybind:listen(Settings.Options.HideGameplayUI[1], function()
-        Settings.Options.ShowGameplayUI = not Settings.Options.ShowGameplayUI;
-    end)
-	
-    tree = DoBase(props)
-    handle = Roact.mount(tree, PlayerGui, "Gameplay")
-
-    Logger:Log("Gameplay tree mounted!")
-end
-
-function self:Update(props)
-    tree = DoBase(props)
-    Roact.update(handle, tree)
-end
-
-function self:Unmount()
-    Logger:Log("Tearing down stage...")
-    for i, v in pairs(listenerPool) do
-        v:stop()
-    end
-    listenerPool = {}
-    Logger:Log("Event listeners destroyed...")
-    Roact.unmount(handle)
-    Logger:Log("Gameplay tree mounted!")
-end
-
-return self
+return GameplayScreen
