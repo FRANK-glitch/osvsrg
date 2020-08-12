@@ -1,1 +1,0 @@
-game:GetService("StarterGui").ResetPlayerGuiOnSpawn = false

@@ -1,6 +1,0 @@
-[submodule "src/ReplicatedStorage/LocalStorage"]
-	path = src/ReplicatedStorage/LocalStorage
-	url = https://github.com/RoBeats-CS/robeats-cs-songs.git
-[submodule "src/ReplicatedStorage/Engine"]
-	path = src/ReplicatedStorage/Engine
-	url = https://github.com/RoBeats-CS/robeats-cs-engine

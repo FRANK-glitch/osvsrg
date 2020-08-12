@@ -1,6 +1,0 @@
-{
-    "rojo.releaseBranch": "6.x",
-    "Lua.diagnostics.globals": [
-        "game"
-    ]
-}

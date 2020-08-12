@@ -1,3 +1,0 @@
-local Time = {}
-
-return Time
