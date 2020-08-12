@@ -13,6 +13,7 @@ local Math = require(Utils.Math)
 local Settings = require(Utils.Settings)
 local Keybind = require(Utils.Keybind)
 local Logger = require(Utils.Logger):register(script)
+local Game = require(Utils.Game)
 local DateTime = require(ReplicatedStorage.DateTime)
 
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
@@ -142,7 +143,7 @@ function GameplayScreen:render()
 			SliceScale = 1,
 			ImageColor3 = Color3.fromRGB(232, 49, 49),
 			[Roact.Event.MouseButton1Click] = function(rbx)
-            	game_.force_quit = true
+            	Game:EndGame()
      		end;
 		}, {
 			Label = Roact.createElement("TextLabel", {

@@ -37,9 +37,11 @@ local Game = {
 	ForceQuit = false;
 	SongDone = false;
 	HeartbeatConnection = nil;
+	GameLoaded = false;
 }
 	
 function Game:StartGame(song, settings)
+	self.GameLoaded = false;
 	local rate, keys, note_color, scroll_speed, combo = settings.Rate, settings.Keybinds, Color3.new(1,1,1), settings.ScrollSpeed or 20, 0
 	--[[
 		{
@@ -87,7 +89,7 @@ function Game:StartGame(song, settings)
 	Logger:Log("Game currently loading...")
 	
 	repeat wait() until self.LocalGame:is_ready() and self.LocalServices._game_join:is_game_audio_loaded()
-
+	self.GameLoaded = true
 	Logger:Log("Game loaded!")
 	Logger:Log("Starting game...")
 	self.LocalServices._game_join:start_game(EnvironmentSetup:get_protos())
@@ -125,12 +127,19 @@ function Game:StartGame(song, settings)
 			total = data[7];
 		})
 
-		if self.SongDone then
-			self.HeartbeatConnection:Disconnect()
+		if self.SongDone or self.ForceQuit then
+			Game:EndGame(self.ForceQuit)
 		end
 	end)
 end
+function Game:EndGame(forceQuit)
+	repeat wait() until self.GameLoaded
+	self.HeartbeatConnection:Disconnect()
+	self.ForceQuit = not not forceQuit
+	self:DestroyStage()
+end
 function Game:DestroyStage()
+	self.GameLoaded = false
 	self.LocalServices._game_join:finishGame()
 	local so = workspace.CurrentCamera:GetChildren()
 	for i=1, #so do

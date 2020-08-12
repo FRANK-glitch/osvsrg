@@ -440,7 +440,6 @@ function SongSelectScreen:render()
 						local noteColor = Color:convertHSV(note_color_opt)
 						Game:StartGame(song, settings)
 						--_marv_count,_perfect_count,_great_count,_good_count,_ok_count,_miss_count,_total_count,self_:get_acc(),self_._score,self_._chain,_max_chain
-						--Game:DestroyStage()
 					end, self.props.curSelected, self.props.settings, self.props)
 				end;
 			}, {
