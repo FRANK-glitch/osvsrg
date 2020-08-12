@@ -20,10 +20,20 @@
       "$ignoreUnknownInstances": false,
       "$path": "src/ReplicatedStorage"
     },
+    "ReplicatedFirst": {
+      "$className": "ReplicatedFirst",
+      "$ignoreUnknownInstances": false,
+      "$path": "src/ReplicatedFirst"
+    },
     "ServerScriptService": {
       "$className": "ServerScriptService",
       "$ignoreUnknownInstances": false,
       "$path": "src/ServerScriptService"
+    },
+    "ServerStorage": {
+      "$className": "ServerStorage",
+      "$ignoreUnknownInstances": false,
+      "$path": "src/ServerStorage"
     },
     "StarterGui": {
       "$className": "StarterGui",
