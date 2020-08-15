@@ -18,7 +18,7 @@ function StateController:Init()
     local reducer = Rodux.createReducer(self.Modules.Metadata.InitialState, {
         modifySetting = function(state, action)
             return Llama.Dictionary.join(state, {
-                Settings = Llama.Dictionary.join(state.Settings, {
+                Settings = Llama.Dictionary.join(state.settings, {
                     [action.setting] = action.value
                 })
             })
@@ -35,7 +35,7 @@ function StateController:Init()
         end;
         updateStats = function(state, action)
             return Llama.Dictionary.join(state,{
-                SongStats = Llama.Dictionary.join(state.SongStats, {
+                SongStats = Llama.Dictionary.join(state.songStats, {
                     score = action.score;
                     combo = action.combo;
                     maxcombo = action.maxcombo;
