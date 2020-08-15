@@ -5,7 +5,7 @@
 return {
     curScreen = "MainMenuScreen";
     curSelected = nil;
-    Settings = {
+    settings = {
         ScrollSpeed = 20;
         NoteColor = Color3.fromHSV(0,0,0);
         Rate = 1;
@@ -37,7 +37,7 @@ return {
         ShowBads = true;
         ShowMisses = true;
     };
-    SongStats = {
+    songStats = {
         score = 0;
         combo = 0;
         maxcombo = 0;

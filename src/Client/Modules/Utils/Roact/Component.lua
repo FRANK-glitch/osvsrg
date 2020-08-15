@@ -6,7 +6,7 @@
 
 local Component: AeroController = {}
 
-function Component:Wrap(acomponent, name)
+function Component:Wrap(acomponent, name, includeStateConnection)
     local Roact: Roact = self.Shared.Roact
     local RoactRodux = self.Shared.RoactRodux
 
@@ -24,6 +24,10 @@ function Component:Wrap(acomponent, name)
     newComponent.Controllers = self.Controllers
     newComponent.Player = self.Player
     newComponent.Services = self.Services
+
+    if includeStateConnection then
+        newComponent = self.Controllers.StateController.RoactRoduxConnection(newComponent)
+    end
 
     return newComponent
 end
