@@ -4,16 +4,33 @@
 
 local Roact: Roact
 local Component
+local Metrics
+local Date
 
 local SongSelectScreen = {}
 
 function SongSelectScreen:init()
     Roact = self.Shared.Roact
-	Component = self.Modules.Utils.Roact.Component
+    Component = self.Modules.Utils.Roact.Component
+    Metrics = self.Modules.Utils.Metrics
+    Date = self.Shared.Date
 end
 
 function SongSelectScreen:render()
+    print("CRINGE.")
+
     local rate = self.props.settings.Rate
+
+	local rate_s = "Song Rate: " .. rate .. "x"
+	
+	local rateMult = Metrics:CalculateRateMult(rate or 1)
+
+	local length = 25000
+	local dtTime = Date.new((length/1000)/rate)
+	local songLength = string.format("Song Length: %d:%d", dtTime.Minute, dtTime.Second)
+
+	local sbuttons, found = {}, 0
+
     return Roact.createElement("ScreenGui",{
 		Enabled = self.props.curScreen == script.Name
 	}, {
@@ -32,8 +49,6 @@ function SongSelectScreen:render()
 				Size = UDim2.new(1, 0, 0.2, 0),
 				Position = UDim2.new(0.5, 0, 0, 0),
 				BorderSizePixel = 0,
-				BackgroundTransparency = 1,
-				ScaleType = Enum.ScaleType.Crop,
 				BackgroundColor3 = Color3.fromRGB(223, 179, 179),
 				BackgroundTransparency = 0,
 				ScaleType = Enum.ScaleType.Crop,
@@ -53,7 +68,7 @@ function SongSelectScreen:render()
 				}, {
 					Data = Roact.createElement("TextLabel", {
 						AnchorPoint = Vector2.new(0.5,0.5);
-						Text = self.props.curSelected:GetArtist();
+						Text = "";
 						TextColor3 = Color3.new(1,1,1);
 						TextScaled = true;
 						BackgroundTransparency = 1;
@@ -75,7 +90,7 @@ function SongSelectScreen:render()
 				}, {
 					Data = Roact.createElement("TextLabel", {
 						AnchorPoint = Vector2.new(0.5,0.5);
-						Text = self.props.curSelected:GetSongName();
+						Text = "";
 						TextColor3 = Color3.new(1,1,1);
 						TextScaled = true;
 						BackgroundTransparency = 1;

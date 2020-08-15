@@ -23,12 +23,13 @@ function GameController:Init()
 
 	screens = {
 		screens.MainMenuScreen;
+		screens.SongSelectScreen;
 	}
 
 	local wrappedScreens = {}
 
 	for i, v in pairs(screens) do
-		wrappedScreens[i] = Roact.createElement(ComponentUtil:Wrap(v, true))
+		wrappedScreens[i] = Roact.createElement(ComponentUtil:Wrap(v, i, true))
 	end
 
 	local gui: RoactElement = Roact.createElement("ScreenGui", {}, wrappedScreens)
