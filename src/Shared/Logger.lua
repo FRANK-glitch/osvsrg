@@ -17,7 +17,7 @@ local function stringConditionalChain(...)
 
     for i, v in pairs({...}) do
         if v[1] then
-            o ..= v[2] .. (not v[3]) and " "
+            o ..= v[2] .. (not v[3] and " ")
         end
     end
 

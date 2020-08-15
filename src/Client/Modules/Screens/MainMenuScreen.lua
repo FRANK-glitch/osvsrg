@@ -3,14 +3,17 @@
 -- August 14, 2020
 
 local Roact: Roact
+local Component
 
 local MainMenuScreen = {}
 
 function MainMenuScreen:init()
 	Roact = self.Shared.Roact
+	Component = self.Modules.Utils.Roact.Component
 end
 
 function MainMenuScreen:render()
+	local MenuOption = Component:Wrap(self.Modules.Components.MenuOption)
 	return Roact.createElement("ScreenGui", {
 		ResetOnSpawn = false,
 		ZIndexBehavior = Enum.ZIndexBehavior.Global,
@@ -207,6 +210,60 @@ function MainMenuScreen:render()
 				UDim2.new(0.025, 0, 0.78, 0)
 				UDim2.new(0.025, 0, 0.88, 0)
 			]]--
+			PlayButton = Roact.createElement(MenuOption, {
+				Size = UDim2.new(0.25, 0, 0.08, 0),
+				Position = UDim2.new(0.025, 0, 0.38, 0),
+				ZIndex = 2,
+				Text = "PLAY",
+				OnClick = function()
+					self.props.switchScreens("SongSelectScreen")
+				end;
+			}),
+			RankingsButton = Roact.createElement(MenuOption, {
+				Size = UDim2.new(0.25, 0, 0.08, 0),
+				Position = UDim2.new(0.025, 0, 0.48, 0),
+				ZIndex = 2,
+				Text = "RANKING",
+				OnClick = function()
+					self.props.switchScreens("SongSelectScreen")
+				end;
+			}),
+			OptionsButton = Roact.createElement(MenuOption, {
+				Size = UDim2.new(0.25, 0, 0.08, 0),
+				Position = UDim2.new(0.025, 0, 0.58, 0),
+				ZIndex = 2,
+				Text = "OPTIONS",
+				OnClick = function()
+					self.props.switchScreens("OptionsScreen")
+				end;
+			}),
+			SpectateButton = Roact.createElement(MenuOption, {
+				Size = UDim2.new(0.25, 0, 0.08, 0),
+				Position = UDim2.new(0.025, 0, 0.68, 0),
+				ZIndex = 2,
+				Text = "SPECTATE",
+				OnClick = function()
+					self.props.switchScreens("SongSelectScreen")
+				end;
+			}),
+			LeaderboardButton = Roact.createElement(MenuOption, {
+				Size = UDim2.new(0.25, 0, 0.08, 0),
+				Position = UDim2.new(0.025, 0, 0.78, 0),
+				ZIndex = 2,
+				Text = "LEADERBOARD",
+				OnClick = function()
+					self.props.switchScreens("SongSelectScreen")
+				end;
+			}),
+			MultiButton = Roact.createElement(MenuOption, {
+				Size = UDim2.new(0.25, 0, 0.08, 0),
+				Position = UDim2.new(0.025, 0, 0.88, 0),
+				ZIndex = 2,
+				Text = "MULITPLAYER",
+				OnClick = function()
+					self.props.switchScreens("SongSelectScreen")
+				end;
+			}),
 			TopScores = Roact.createElement("ImageLabel", {
 				Size = UDim2.new(0.325, 0, 0.58, 0),
 				Position = UDim2.new(0.3, 0, 0.38, 0),
