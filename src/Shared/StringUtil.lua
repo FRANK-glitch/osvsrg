@@ -303,6 +303,15 @@ function StringUtil.ToKebabCase(str, uppercase)
 	return str
 end
 
+function StringUtil.RandomString(length)
+	length = length or 30
+	local stringBuilder = StringUtil.StringBuilder()
+	for i = 1, length do
+		stringBuilder:Append(string.char(math.random(97,130)))
+	end
+	return stringBuilder:ToString()
+end
+
 
 setmetatable(StringUtil, {__index = string})
 
