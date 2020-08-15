@@ -2,6 +2,12 @@
   "name": "AeroGameFramework",
   "tree": {
     "$className": "DataModel",
+    "Lighting": {
+      "$className": "Lighting",
+      "$properties": {
+        "ClockTime": 0
+      }
+    },
     "ReplicatedStorage": {
       "$className": "ReplicatedStorage",
       "Aero": {
