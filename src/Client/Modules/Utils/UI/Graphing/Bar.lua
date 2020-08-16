@@ -1,10 +1,10 @@
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Roact = require(ReplicatedStorage.Roact)
-local Rodux = require(ReplicatedStorage.Rodux)
-local RoactRodux = require(ReplicatedStorage.RoactRodux)
-
+local Roact
 
 local Dot = {}
+
+function Dot:Init()
+	Roact = self.Shared.Roact
+end
 
 function Dot:new()
 	local self = {}

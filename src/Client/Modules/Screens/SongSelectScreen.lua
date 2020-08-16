@@ -6,6 +6,7 @@ local Roact: Roact
 local Component
 local Metrics
 local Date
+local UI
 
 local SongSelectScreen = {}
 
@@ -13,14 +14,14 @@ function SongSelectScreen:init()
     Roact = self.Shared.Roact
     Component = self.Modules.Utils.Roact.Component
     Metrics = self.Modules.Utils.Metrics
-    Date = self.Shared.Date
+	Date = self.Shared.Date
+	UI = self.Modules.Utils.UI
 end
 
-function SongSelectScreen:render()
-    print("CRINGE.")
+function SongSelectScreen:render()	
+	local barGraph = self.Modules.Utils.UI.Graphing.Bar:new()
 
     local rate = self.props.settings.Rate
-
 	local rate_s = "Song Rate: " .. rate .. "x"
 	
 	local rateMult = Metrics:CalculateRateMult(rate or 1)
@@ -197,7 +198,7 @@ function SongSelectScreen:render()
 					}),
 				});
 			}),]]--
-			--[[NpsGraph = Roact.createElement(NpsGraph, {
+			NpsGraph = Roact.createElement(barGraph.component, {
 				Size = UDim2.new(0.27,0,0.35,0),
 				AnchorPoint = Vector2.new(0.5,1),
 				Position = UDim2.new(0.45,0,0.99,0),
@@ -205,7 +206,7 @@ function SongSelectScreen:render()
 				ZIndex = 2,
 				settings = self.props.settings,
 				curSelected = self.props.curSelected,
-			});]]--
+			});
 			Songs = Roact.createElement("Frame", {
 				AnchorPoint = Vector2.new(1,0);
 				Position = UDim2.new(0.99, 0,0.22, 0),
