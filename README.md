@@ -1,5 +1,5 @@
-# robeats-cs
-Roblox RoBeats fork focused on skill
+# osvsrg
+Replacement for RoBeats CS
 
 # Mission and purpose
 
