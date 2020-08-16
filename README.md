@@ -19,13 +19,13 @@ If you want to contribute to the codebase, just follow these steps and you'll be
 
 Make sure you have git installed and run this:
 
-`git clone https://github.com/RoBeats-CS/robeats-cs.git --recurse-submodules`
+`git clone https://github.com/RoVSRG/osvsrg.git --recurse-submodules`
 
 This will clone the current codebase onto your computer.
 
 2. Build
 
-This is the most complicated step, but it is still incredibly easy to execute. All you have to do is `cd` into the working directory of the codebase with `cd robeats-cs`, make sure you have [Rojo](https://rojo.space/) installed (v6.0.0-rc.1), and run `mkdir build && rojo build --output build/robeats-cs-build.rbxlx`. If everything went well, a new `.rbxlx` file should appear within the build directory. Use Rojo live-sync technology (`rojo serve` + Rojo live-sync plugin v6.0.0-rc.1) to sync the codebase with the local build of the game (the `.rbxlx` file) for easy-peasy testing. Now you are ready to code!
+This is the most complicated step, but it is still incredibly easy to execute. All you have to do is `cd` into the working directory of the codebase with `cd robeats-cs`, make sure you have [Rojo](https://rojo.space/) installed (v6.0.0-rc.1), and run `mkdir build && rojo build --output build/osvsrg-build.rbxlx`. If everything went well, a new `.rbxlx` file should appear within the build directory. Use Rojo live-sync technology (`rojo serve` + Rojo live-sync plugin v6.0.0-rc.1) to sync the codebase with the local build of the game (the `.rbxlx` file) for easy-peasy testing. Now you are ready to code!
 
 3. Contribute
 
