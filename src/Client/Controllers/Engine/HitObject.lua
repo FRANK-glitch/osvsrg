@@ -47,6 +47,13 @@ function HitObject:new(properties)
         print(judgement, name)
     end
     function hitObject:Release()
+        if self.type == 2 then
+            local jnumber = self:CurrentJudgement()
+            if jnumber == 0 then
+                self.holdBroken = true
+                return
+            end
+        end
         self.released = true
     end
 
@@ -56,6 +63,7 @@ function HitObject:new(properties)
     hitObject.currentTimeMs = 0
     hitObject.track = properties.track or 1
     hitObject.id = properties.id or -1
+    hitObject.holdBroken = false
 
     return hitObject
 end
