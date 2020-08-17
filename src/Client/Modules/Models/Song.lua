@@ -6,23 +6,18 @@
 
 local Song = {}
 
-function Song:new(instance)
+function Song:new(data)
     local cachedId = nil
 	local cachedRating = nil
 	local cachedObNum = nil
 	local cachedNpsGraph = nil
 
-    local songObject = {}
-
-    songObject.instance = instance
-    songObject.data = require(self.instance)
+	local songObject = {}
+	
+    songObject.data = data
 	
 	function songObject:GetData()
 		return self.data
-	end
-	
-	function songObject:GetName()
-		return self.instance.Name
 	end
 	
 	function songObject:GetDisplayName()

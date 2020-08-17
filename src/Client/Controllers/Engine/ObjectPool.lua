@@ -6,6 +6,13 @@
 
 local ObjectPool = {}
 
+local HttpService = game:GetService("HttpService")
+
+local Engine = script.Parent
+local HitObject = require(Engine.HitObject)
+local Result = require(Engine.Result)
+local Input = require(Engine.Input)
+
 function ObjectPool:new(properties)
     --[[
         properties = {
@@ -25,45 +32,34 @@ function ObjectPool:new(properties)
         keybinds = properties.keybinds;
     }
 
-    local HitObject = self.Controllers.Engine.HitObject
-    local Result = self.Controllers.Engine.Result
     local Timings = Result.Timings
-    local Input = self.Controllers.UserInput
-    local Keyboard = Input:Get("Keyboard")
-
-    local keysLastUpdate = {false,false,false,false}
+    local UserInput = self.Controllers.UserInput
+    local Keyboard = UserInput:Get("Keyboard")
 
     function objectPool:Update(songPosition)
-
-        local curKeys = {
-            Keyboard:IsDown(self.keybinds[1]);
-            Keyboard:IsDown(self.keybinds[2]);
-            Keyboard:IsDown(self.keybinds[3]);
-            Keyboard:IsDown(self.keybinds[4]);
+        local keys = {
+            Pressed = {};
+            Released = {};
         }
-        local pressed_keys = { --// DETECT NEWLY PRESSED KEYS
-            not (keysLastUpdate[1] == false and curKeys[1] == true);
-            not (keysLastUpdate[2] == false and curKeys[2] == true);
-            not (keysLastUpdate[3] == false and curKeys[3] == true);
-            not (keysLastUpdate[3] == false and curKeys[4] == true);
-        }
-
-        local released_keys = { --// DETECT NEWLY RELEASED KEYS
-            not (keysLastUpdate[1] == true and curKeys[1] == false);
-            not (keysLastUpdate[2] == true and curKeys[2] == false);
-            not (keysLastUpdate[3] == true and curKeys[3] == false);
-            not (keysLastUpdate[3] == true and curKeys[4] == false);
-        }
-
+        for i = 1, 4 do
+            keys.Pressed[i] = Input:KeyJustPressed(self.keybinds[i])
+            keys.Released[i] = Input:KeyJustReleased(self.keybinds[i])
+        end
         --// CHECK FOR NEW OBJECTS
+
+        local __print_line = false
+        local __last_time = 0
+        local __lanes = {false,false,false,false}
+
         for i = self.index, #self.hitObjects do
+            self.index = i
             local curOb = self.hitObjects[i]
             --// CHECK IF WE NEED TO SPAWN THIS OBJECT
             if curOb.Time <= songPosition then
                 local endTime = curOb.Duration ~= nil and curOb.Time + curOb.Duration or nil
                 self:Pool({
                     track = curOb.Track,
-                    time = curOb.Time,
+                    startTime = curOb.Time,
                     endTime = endTime,
                     id = i,
                 })
@@ -76,18 +72,17 @@ function ObjectPool:new(properties)
         --// HANDLE POOLED OBJECTS
         for i, curHitObject in pairs(self.pool) do
             curHitObject:Update(songPosition)
-            for i = 1, 4 do
-                local keyPressed = pressed_keys[i]
-                local keyReleased = released_keys[i]
-                if keyPressed and curHitObject.track == k then
-                    local judgement = curHitObject:CurrentJudgement()
-                    if judgement ~= 0 then
-
+            for n = 1, 4 do
+                local kp = keys.Pressed[n]
+                local kr = keys.Released[n]
+                if kp or kr then
+                    local j = curHitObject:CurrentJudgement()
+                    if j ~= 0 then
+                        print(j)
                     end
                 end
             end
         end
-        keysLastUpdate = curKeys
     end
 
     function objectPool:Depool(id)
@@ -107,10 +102,11 @@ function ObjectPool:new(properties)
             }
         ]]--
         self.pool[#self.pool+1] = HitObject:new({
-            startTime = startTime;
-            endTime = endTime;
-            track = track;
+            startTime = properties.startTime;
+            endTime = properties.endTime;
+            track = properties.track;
             scrollSpeedMs = properties.scrollSpeedMs;
+            id = properties.id;
         })
     end
 

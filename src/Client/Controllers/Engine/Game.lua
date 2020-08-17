@@ -6,8 +6,18 @@
 
 local Game = {}
 
+local ObjectPool = require(script.Parent.ObjectPool)
+
 function Game:new(properties)
-    local localGame = {}
+    local localGame = {
+        services = {
+            ObjectPool = ObjectPool:new({
+                scrollSpeedMs = properties.scrollSpeedMs;
+                hitObjects = properties.song.data.HitObjects;
+                keybinds = properties.keybinds;
+            });
+        }
+    }
 
     --[[
         properties = {

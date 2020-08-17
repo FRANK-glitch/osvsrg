@@ -6,6 +6,9 @@
 
 local HitObject = {}
 
+local Engine = script.Parent
+local Result = require(Engine.Result)
+
 function HitObject:new(properties)
     --[[
         properties = {
@@ -16,13 +19,12 @@ function HitObject:new(properties)
             id = 457 > the unique id of the hit object
         }
     ]]--
-    local NumberUtil = self.Shared.NumberUtil
-    local Result = self.Controllers.Engine.Result        
+    local NumberUtil = self.Shared.NumberUtil       
 
     local hitObject = {}
 
     function hitObject:Update(currentTimeMs)
-        self.currentTimeMs = currentTimeMs
+        self.currentTimeMs = currentTimeMs or 0
     end
     function hitObject:GetStartTime() return properties.startTime end
     function hitObject:GetEndTime() return properties.endTime end
@@ -39,7 +41,13 @@ function HitObject:new(properties)
         return nil
     end
     function hitObject:CurrentJudgement()
-        return Result:GetHitResult(math.abs(self.hit and (self.currentTimeMs-self.startTime) or (self.currentTimeMs-self.endTime)))
+        local val = (
+            math.abs(
+                self.type == 1 and (self.currentTimeMs-self.startTime) or
+                self.type == 2 and (self.hit and (self.currentTimeMs-self.startTime) or (self.currentTimeMs-self.endTime))
+            )
+        )
+        return Result:GetHitResult(val)
     end
     function hitObject:Hit()
         self.hit = true
@@ -64,6 +72,8 @@ function HitObject:new(properties)
     hitObject.track = properties.track or 1
     hitObject.id = properties.id or -1
     hitObject.holdBroken = false
+    hitObject.startTime = properties.startTime
+    hitObject.endTime = properties.endTime
 
     return hitObject
 end

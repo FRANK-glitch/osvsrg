@@ -6,14 +6,10 @@
 
 local Engine = {}
 
-local modules = {}
-
-local function get(name)
-	return modules[name]
-end
+local Game = require(script.Game)
 
 function Engine:NewGame(settings)
-	local _game = get("Game"):new()
+	local _game = Game:new(settings)
 	self.currentGame = _game
 	return self.currentGame
 end
@@ -21,9 +17,7 @@ end
 function Engine:Init()
 	for _,obj in ipairs(script:GetChildren()) do
 		if (obj:IsA("ModuleScript")) then
-			local module = require(obj)
-			self:WrapModule(module)
-			modules[obj.Name] = module
+			self:WrapModule(require(obj))
 		end
 	end
 end

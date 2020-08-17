@@ -2,6 +2,7 @@
 -- kisperal 
 -- August 14, 2020
 
+local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
 
 local GameController = {}
@@ -9,11 +10,6 @@ local GameController = {}
 local ScreenWrapper
 
 function GameController:Start()
-	
-end
-
-
-function GameController:Init()
 	local Roact:Roact = self.Shared.Roact
 	local RoactRodux = self.Shared.RoactRodux
 
@@ -41,6 +37,30 @@ function GameController:Init()
 	})
 
 	Roact.mount(tree, self.Player.PlayerGui)
+
+	local song = self.Modules.Models.Song:new(self.Modules.Songs.testsong)
+
+	local Engine = self.Controllers.Engine
+
+	local newGame = Engine:NewGame({
+		scrollSpeedMs = 500;
+		song = song;
+		keybinds = {
+			Enum.KeyCode.X;
+			Enum.KeyCode.C;
+			Enum.KeyCode.Comma;
+			Enum.KeyCode.Period;
+		};
+	})
+	
+	local time__ = 0
+	
+	RunService.Heartbeat:Connect(function(dt)
+		time__ += dt*1000
+		newGame.services.ObjectPool:Update(time__)
+	end)
+
+	newGame.services.ObjectPool:Update(50)
 end
 
 
