@@ -50,5 +50,9 @@ return {
         accuracy = 0;
         total = 0;
     };
+    songState = {
+        songPosition = 0;
+        notes = {};
+    };
     curSelectedOptionTab = nil;
 }
